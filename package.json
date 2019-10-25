@@ -1,0 +1,66 @@
+{
+  "_args": [
+    [
+      "@antbuddy/oliver-framework@1.0.8",
+      "/home/oliverhuynh/projects/antbuddy"
+    ]
+  ],
+  "_from": "@antbuddy/oliver-framework@1.0.8",
+  "_id": "@antbuddy/oliver-framework@1.0.8",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/@antbuddy/oliver-framework",
+  "_nodeVersion": "8.10.0",
+  "_npmUser": {},
+  "_npmVersion": "3.5.2",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "@antbuddy/oliver-framework",
+    "raw": "@antbuddy/oliver-framework@1.0.8",
+    "rawSpec": "1.0.8",
+    "scope": "@antbuddy",
+    "spec": "1.0.8",
+    "type": "version"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_shasum": "62219ea525d5f3c02c33bf7bef21f5e3fb2fef82",
+  "_shrinkwrap": null,
+  "_spec": "@antbuddy/oliver-framework@1.0.8",
+  "_where": "/home/oliverhuynh/projects/antbuddy",
+  "author": {
+    "name": "Oliver Huynh"
+  },
+  "dependencies": {
+    "app-root-path": "^2.2.1",
+    "easy-promise-queue": "^0.5.4",
+    "extend": "^3.0.2",
+    "minimist": "^1.2.0",
+    "moment": "^2.24.0",
+    "nodeproxy": "^1.0.0",
+    "promise-foreach": "^1.0.23",
+    "sprintf-js": "^1.1.2"
+  },
+  "description": "Sharing common functions/features",
+  "devDependencies": {},
+  "dist": {
+    "shasum": "62219ea525d5f3c02c33bf7bef21f5e3fb2fef82",
+    "tarball": "http://localhost:4873/@antbuddy%2foliver-framework/-/oliver-framework-1.0.8.tgz"
+  },
+  "gitHead": "68f91fe0446316c742a5f70ce188e7dfe05598f4",
+  "license": "ISC",
+  "main": "common.js",
+  "name": "@antbuddy/oliver-framework",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@repo.htk.me:2212/all/tech/libs/oliver-framework.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "1.0.8"
+}
