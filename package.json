@@ -1,7 +1,7 @@
 {
   "_args": [
     [
-      "ab/oliver-framework@1.0.8",
+      "oliver-framework@1.0.8",
       "/home/oliverhuynh/projects/antbuddy"
     ],
     [
@@ -10,10 +10,10 @@
     ]
   ],
   "_from": "git://github.com/antbuddy-share/oliver-framework.git#1.x",
-  "_id": "ab/oliver-framework@1.0.8",
+  "_id": "oliver-framework@1.0.8",
   "_inCache": true,
   "_installable": true,
-  "_location": "/ab/oliver-framework",
+  "_location": "oliver-framework",
   "_nodeVersion": "8.10.0",
   "_npmUser": {},
   "_npmVersion": "3.5.2",
