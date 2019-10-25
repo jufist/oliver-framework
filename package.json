@@ -65,7 +65,7 @@
   "gitHead": "68f91fe0446316c742a5f70ce188e7dfe05598f4",
   "license": "ISC",
   "main": "common.js",
-  "name": "ab/oliver-framework",
+  "name": "oliver-framework",
   "optionalDependencies": {},
   "readme": "ERROR: No README data found!",
   "readmeFilename": "README.md",
