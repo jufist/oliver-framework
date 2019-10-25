@@ -1,48 +1,4 @@
-{
-  "_args": [
-    [
-      "oliver-framework@1.0.8",
-      "/home/oliverhuynh/projects/antbuddy"
-    ],
-    [
-      "git://github.com/antbuddy-share/oliver-framework.git#1.x",
-      "/home/oliverhuynh/instances/new-sass/tools/sbc-automate"
-    ]
-  ],
-  "_from": "git://github.com/antbuddy-share/oliver-framework.git#1.x",
-  "_id": "oliver-framework@1.0.8",
-  "_inCache": true,
-  "_installable": true,
-  "_location": "oliver-framework",
-  "_nodeVersion": "8.10.0",
-  "_npmUser": {},
-  "_npmVersion": "3.5.2",
-  "_phantomChildren": {},
-  "_requested": {
-    "hosted": {
-      "directUrl": "https://raw.githubusercontent.com/antbuddy-share/oliver-framework/1.x/package.json",
-      "gitUrl": "git://github.com/antbuddy-share/oliver-framework.git#1.x",
-      "httpsUrl": "git+https://github.com/antbuddy-share/oliver-framework.git#1.x",
-      "shortcut": "github:antbuddy-share/oliver-framework#1.x",
-      "ssh": "git@github.com:antbuddy-share/oliver-framework.git#1.x",
-      "sshUrl": "git+ssh://git@github.com/antbuddy-share/oliver-framework.git#1.x",
-      "type": "github"
-    },
-    "name": null,
-    "raw": "git://github.com/antbuddy-share/oliver-framework.git#1.x",
-    "rawSpec": "git://github.com/antbuddy-share/oliver-framework.git#1.x",
-    "scope": null,
-    "spec": "git://github.com/antbuddy-share/oliver-framework.git#1.x",
-    "type": "hosted"
-  },
-  "_requiredBy": [
-    "/"
-  ],
-  "_resolved": "git://github.com/antbuddy-share/oliver-framework.git#eb86b442507e1e6386f58d709cf1f2354d35cac2",
-  "_shasum": "aa768dbd5aa3485b2aca83cf3f34d88bf3cc72f7",
-  "_shrinkwrap": null,
-  "_spec": "git://github.com/antbuddy-share/oliver-framework.git#1.x",
-  "_where": "/home/oliverhuynh/instances/new-sass/tools/sbc-automate",
+{  
   "author": {
     "name": "Oliver Huynh"
   },
@@ -57,15 +13,10 @@
     "sprintf-js": "^1.1.2"
   },
   "description": "Sharing common functions/features",
-  "devDependencies": {},
-  "dist": {
-    "shasum": "62219ea525d5f3c02c33bf7bef21f5e3fb2fef82",
-    "tarball": "http://localhost:4873/ab%2foliver-framework/-/oliver-framework-1.0.8.tgz"
-  },
-  "gitHead": "68f91fe0446316c742a5f70ce188e7dfe05598f4",
+  "devDependencies": {}, 
   "license": "ISC",
   "main": "common.js",
-  "name": "ab/oliver-framework",
+  "name": "oliver-framework",
   "optionalDependencies": {},
   "readme": "ERROR: No README data found!",
   "readmeFilename": "README.md",
