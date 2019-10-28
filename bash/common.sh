@@ -51,27 +51,27 @@ function addhost() {
 }
 
 forceup () {
-	echo "[Ok] Service up"	
+	echo "[Ok] Service up"
 	if [ "$TEST" != "1" ] ; then
 		include/folderexec.sh up
 	else
-		echo "[Notice] Ignore executing by option -t"	
-	fi	
+		echo "[Notice] Ignore executing by option -t"
+	fi
 }
 
-forcedown () {	
-	echo "[Error] Service down"	
-	if [ "$TEST" != "1" ] ; then		
+forcedown () {
+	echo "[Error] Service down"
+	if [ "$TEST" != "1" ] ; then
 		include/folderexec.sh down
 	else
-		echo "[Notice] Ignore executing by option -t"	
-	fi	
+		echo "[Notice] Ignore executing by option -t"
+	fi
 }
 
 iptablekill() {
 	ip=$2
 	type=$1
-	linenumber=`sudo iptables -L $type --line-numbers | grep -F "$ip" | head -1 | awk '{print $1}'`		
+	linenumber=`sudo iptables -L $type --line-numbers | grep -F "$ip" | head -1 | awk '{print $1}'`
 	if [ "$linenumber" != "" ] ; then
 		sudo iptables -D $type $linenumber
 		# Continue erasing until finishing
@@ -106,28 +106,28 @@ mongoexec() {
 		mongocmd="mongo --port ${mongo[port]} -u ${mongo[user]} -p ${mongo[password]}"
 	fi
 
-	#if [ ${mongo[authenticationDatabase]} != 1 ] ; then	
-  	#	mongocmd+=" --authenticationDatabase '${mongo[authenticationDatabase]}'"	
-	#fi	
-	
-	if [ ${mongo[authenticationDatabase]} != "" ] ; then	
-  		mongocmd+=" --authenticationDatabase ${mongo[authenticationDatabase]}"	
+	#if [ ${mongo[authenticationDatabase]} != 1 ] ; then
+  	#	mongocmd+=" --authenticationDatabase '${mongo[authenticationDatabase]}'"
+	#fi
+
+	if [ ${mongo[authenticationDatabase]} != "" ] ; then
+  		mongocmd+=" --authenticationDatabase ${mongo[authenticationDatabase]}"
 	fi
 
 	queries=$mongoexecqueries
-	queries+="\nexit\n"	
+	queries+="\nexit\n"
 	#echo -e "$queries"
-	outp=$(echo -e "$queries" | $mongocmd)	
+	outp=$(echo -e "$queries" | $mongocmd)
 }
 
 sitetodo () {
-	if [ "$site" == "dr" ] ; then			
-		drhosts=("${dchosts[@]}") 		
+	if [ "$site" == "dr" ] ; then
+		drhosts=("${dchosts[@]}")
 		dbarbiter=$dcarbiter
-		drbctmp=("${drbc[@]}") 
-		drbc=("${bc[@]}") 
-		bc=("${drbctmp[@]}") 
-		dr=("${dc[@]}") 
+		drbctmp=("${drbc[@]}")
+		drbc=("${bc[@]}")
+		bc=("${drbctmp[@]}")
+		dr=("${dc[@]}")
 	fi
 }
 
@@ -135,7 +135,7 @@ myconfirm () {
 	read -p "Afraid? [Nn}" -n 1 -r
 	if [[ $REPLY =~ ^[Yy]$ ]]
 	then
-		# 
+		#
 		echo ""
 		echo "Good bye"
 	    exit 1
@@ -157,19 +157,68 @@ myargs () {
 
 	for i in "${arr[@]}"
 	do
-		for j in "${args[@]}"		
-		do			
+		for j in "${args[@]}"
+		do
 			short="$(echo $j | cut -d'|' -f1)"
-			long="$(echo $j | cut -d'|' -f2)"	
+			long="$(echo $j | cut -d'|' -f2)"
 			# echo "$short:$long"
 			case $i in
 				    -$short|--$long|-$short=*|--$long=*)
 					varname="MA_$long"
 				    export $varname="${i#*=}"
-			    ;;			    
+			    ;;
 			esac
-		done		
+		done
 	done
+}
+
+preventExist() {
+  arg=$1
+  shift
+  export M0="$0"; export M1="$1"; export M2="$2"; export M3="$3"
+  printarg=$(echo "$arg" | envsubst)
+  c=`ps aux | grep "$printarg " | wc -l`
+  if [ "$c" -gt "3" ]; then
+    echo "[Error] Someone is running this process but this allows to run only one instance at a time. Please try again later!"
+    exit 0
+  fi
+}
+
+is_valid_number () {
+    case "$1" in
+     [1-9][0-9][0-9]-[0-9][0-9][0-9]-[0-9][0-9][0-9][0-9])
+      return 0
+      ;;
+     *)
+      return 1
+      ;;
+    esac
+}
+
+verify_phone() {
+  if ! [[ "$1" =~ ^[0-9]{10}[0-9]?[0-9]?$ ]]
+  then
+      echo "[Error] Verify your phone number $1"
+      exit
+  fi
+}
+
+oliver-common-exec() {
+  if [[ "$1" == "--check-existed" ]]; then
+    arg=$2
+    shift
+    shift
+    preventExist "$arg" "$@"
+  fi
+  action="$1"
+  if [[ $action =~ "--" ]]; then
+    shift
+  else
+    action="--main"
+  fi
+  action="exec$action"
+  $action "$@"
+
 }
 
 execInEachType () {
@@ -189,9 +238,9 @@ execInEachType () {
 		command="ssh $item '$command'"
 		if [[ "$callback" != "" ]] ; then
 			echo "[Exec] $command"
-			eval $command			
+			eval $command
 		else
 			ssh $item
-		fi	  
+		fi
 	done
 }
