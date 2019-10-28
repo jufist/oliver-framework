@@ -2,6 +2,7 @@
 
 ## Using bash structure exec
 
+```bash
 exec--test() {
   echo "Testing calls"
 }
@@ -11,3 +12,4 @@ exec--main() {
 
 . node_modules/oliver-framework/bash/common.sh
 oliver-common-exec --check-existed '$M0 $M1' "$@"
+```
