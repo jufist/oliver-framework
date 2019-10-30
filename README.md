@@ -1,4 +1,13 @@
 # Oliver Framework
+## Setup
+- package.json
+```
+  "dependencies": {
+    "oliver-framework": "git@github.com:antbuddy-share/oliver-framework.git"
+  }
+```
+
+- `npm install`
 
 ## Using bash structure exec
 
