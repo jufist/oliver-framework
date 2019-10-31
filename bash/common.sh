@@ -26,14 +26,12 @@ function addhost() {
     then
         IP=$1
         HOSTNAME=$2
-        OVERWRITE=${3:-"0"}
 
-        if [[ "$OVERWRITE" == "0"  && -n "$(grep $HOSTNAME /etc/hosts)" ]]
+        if [ -n "$(grep $HOSTNAME /etc/hosts)" ]
             then
                 echo "$HOSTNAME already exists:";
                 echo $(grep $HOSTNAME /etc/hosts);
             else
-                removehost "$HOSTNAME"
                 echo "Adding $HOSTNAME to your /etc/hosts";
                 printf "%s\t%s\n" "$IP" "$HOSTNAME" | sudo tee -a /etc/hosts > /dev/null;
 
@@ -179,8 +177,10 @@ preventExist() {
   shift
   export M0="$0"; export M1="$1"; export M2="$2"; export M3="$3"
   printarg=$(echo "$arg" | envsubst)
-  c=`ps aux | grep "$printarg " | wc -l`
+  c=`ps aux | grep "$printarg " | grep -v "$PPID" | wc -l`
+
   if [ "$c" -gt "3" ]; then
+    ps aux | grep "$printarg " | grep -v "$PPID"
     echo "[Error] Someone is running this process but this allows to run only one instance at a time. Please try again later!"
     exit 0
   fi
