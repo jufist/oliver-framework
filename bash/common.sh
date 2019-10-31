@@ -26,12 +26,15 @@ function addhost() {
     then
         IP=$1
         HOSTNAME=$2
+        OVERWRITE=${3:-"0"}
 
-        if [ -n "$(grep $HOSTNAME /etc/hosts)" ]
+
+        if [[ "$OVERWRITE" == "0"  && -n "$(grep $HOSTNAME /etc/hosts)" ]]
             then
                 echo "$HOSTNAME already exists:";
                 echo $(grep $HOSTNAME /etc/hosts);
             else
+                removehost "$HOSTNAME"              
                 echo "Adding $HOSTNAME to your /etc/hosts";
                 printf "%s\t%s\n" "$IP" "$HOSTNAME" | sudo tee -a /etc/hosts > /dev/null;
 
