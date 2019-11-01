@@ -180,10 +180,11 @@ preventExist() {
   shift
   export M0="$0"; export M1="$1"; export M2="$2"; export M3="$3"
   printarg=$(echo "$arg" | envsubst)
-  c=`ps aux | grep "$printarg " | grep -v "$PPID" | wc -l`
+  u=`whoami`
+  d=$(ps aux)
+  e=$(echo "$d" | grep "$u" | grep "$printarg " | grep -v "$PPID" | grep -v "grep " | grep -v -e "^[[:space:]]*$" | wc -l)
 
-  if [ "$c" -gt "3" ]; then
-    ps aux | grep "$printarg " | grep -v "$PPID"
+  if [ "$e" -gt "1" ]; then
     echo "[Error] Someone is running this process but this allows to run only one instance at a time. Please try again later!"
     exit 0
   fi
