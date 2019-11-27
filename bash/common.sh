@@ -34,7 +34,7 @@ function addhost() {
                 echo "$HOSTNAME already exists:";
                 echo $(grep $HOSTNAME /etc/hosts);
             else
-                removehost "$HOSTNAME"              
+                removehost "$HOSTNAME"
                 echo "Adding $HOSTNAME to your /etc/hosts";
                 printf "%s\t%s\n" "$IP" "$HOSTNAME" | sudo tee -a /etc/hosts > /dev/null;
 
@@ -209,6 +209,8 @@ verify_phone() {
   fi
 }
 
+fn_exists() { test x$(type -t $1) = xfunction; }
+
 oliver-common-exec() {
   if [[ "$1" == "--check-existed" ]]; then
     arg=$2
@@ -222,6 +224,13 @@ oliver-common-exec() {
   else
     action="--main"
   fi
+
+  parseaction="vars_parse$action"
+  fn_exists $parseaction && $parseaction "$@"
+
+  verifyaction="vars_verify$action"
+  fn_exists $verifyaction && $verifyaction "$@"
+
   action="exec$action"
   $action "$@"
 
