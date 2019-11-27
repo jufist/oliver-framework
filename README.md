@@ -12,6 +12,7 @@
 ## Using bash structure exec
 
 ```bash
+#!/bin/bash
 
 parseVariables() {
   FORMUSERNAME="$1"
