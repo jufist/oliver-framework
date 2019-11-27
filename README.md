@@ -14,28 +14,33 @@
 ```bash
 #!/bin/bash
 
-parseVariables() {
+exec--test() {
+  echo "Testing calls"
+}
+exec--main() {
+  echo "Main calls"
+  echo "$@"
+}
+
+vars_parse--add() {
   FORMUSERNAME="$1"
   FORMPWD="$2"
 }
 
-verifyVariables() {
+vars_verify--add() {
   if [[ "$FORMUSERNAME" == "" || "$FORMPWD" == "" ]]; then
     echo "[Error] Please verify your input data"
     exit 1
   fi
 }
 
-exec--test() {
-  echo "Testing calls"
-}
-exec--main() {  
+exec--add() {
   echo "Main calls"
+  echo "$@"
 }
 
 . node_modules/oliver-framework/bash/common.sh
 
-parseVariables "$@"
-verifyVariables
 oliver-common-exec --check-existed '$M0 $M1' "$@"
+
 ```
