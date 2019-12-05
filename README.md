@@ -17,9 +17,10 @@
 exec--test() {
   echo "Testing calls"
 }
+
 exec--main() {
-  echo "Main calls"
-  echo "$@"
+  local cmd=`basename $0`
+  declare -F | grep exec-- | sed 's/declare -f exec/'$cmd' /'
 }
 
 vars_parse--add() {
