@@ -1,6 +1,14 @@
 GM = global.GM || {};
-var appRoot = require('app-root-path');
-var config = require(appRoot + '/config');
+var appRoot = require('path').dirname(require('path').dirname(__dirname));
+var config;
+try {
+  config = require(appRoot + '/config');
+}
+catch (e) {
+  config = {};
+}
+config = config || {};
+
 config = config || {};
 config.basedir = appRoot + '';
 var fs = require('fs');
