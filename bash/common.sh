@@ -202,7 +202,7 @@ is_valid_number () {
 }
 
 verify_phone() {
-  if ! [[ "$1" =~ ^[0-9]{10}[0-9]?[0-9]?$ ]]
+  if ! [[ "$1" =~ ^[0-9]{6,13}$ ]]
   then
       echo "[Error] Verify your phone number $1"
       exit
