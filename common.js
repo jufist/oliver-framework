@@ -2,7 +2,7 @@ GM = global.GM || {};
 var appRoot = require('path').dirname(require('path').dirname(__dirname));
 var config;
 try {
-  config = require(appRoot + '/config');
+  config = require(appRoot + '/config.js');
 }
 catch (e) {
   config = {};
