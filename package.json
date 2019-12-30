@@ -1,4 +1,4 @@
-{  
+{
   "author": {
     "name": "Oliver Huynh"
   },
@@ -13,7 +13,7 @@
     "sprintf-js": "^1.1.2"
   },
   "description": "Sharing common functions/features",
-  "devDependencies": {}, 
+  "devDependencies": {},
   "license": "ISC",
   "main": "common.js",
   "name": "oliver-framework",
@@ -27,5 +27,5 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "version": "1.0.11"
+  "version": "1.0.13"
 }
