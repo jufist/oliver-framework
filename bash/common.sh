@@ -212,7 +212,7 @@ verify_phone() {
 fn_exists() { test x$(type -t $1) = xfunction; }
 
 oliver-common-exec() {
-  SETUPDIR=$(dirname $0)
+  SETUPDIR=$( dirname $(realpath "$0") )
   if [[ "$1" == "--check-existed" ]]; then
     arg=$2
     shift
