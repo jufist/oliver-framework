@@ -5,7 +5,19 @@ exec--main() {
   declare -F | grep exec-- | sed 's/declare -f exec/'$cmd' /'
 }
 
-
 SETUPDIR=$( dirname $(realpath "$0") )
 . $SETUPDIR/bash/common.sh
-oliver-common-exec "$@"
+
+definedcallbacks=("--healthstatus")
+callback="$1"
+shift
+if [[ " ${definedcallbacks[@]} " =~ " ${callback} " ]]; then
+  module=$(basename $PWD)
+  arg=$(addQuote "$@")
+  echo "$arg"
+  cmd="$SETUPDIR/index.js $module $callback $arg"
+  echo "[Info][Exec] via node. $cmd"
+  eval $cmd
+else
+  oliver-common-exec "$@"
+fi

@@ -66,15 +66,15 @@ global.cl = function(e) {
   if (!config.debug && (e && e.indexOf && (e.indexOf("[Exec") !== -1 || e.indexOf("[Debug") !== -1))) {
     return;
   }
-  var moment = require('moment'); 
-  /* 
-  ** format time log Ex. [Thu Feb 28 2019 +07:00 14:24:51.757] 
+  var moment = require('moment');
+  /*
+  ** format time log Ex. [Thu Feb 28 2019 +07:00 14:24:51.757]
   */
   var wrapped = moment(new Date()).format('ddd MMM DD YYYY Z HH:mm:ss.SSS');
   var args = arguments;
   wrapped = `[${wrapped}]`;
 
-  /*if (config.debug) {    
+  /*if (config.debug) {
     var callerFunction = cl.caller.name;
     wrapped = `${wrapped} [${callerFunction}]`;
   }*/
@@ -90,31 +90,31 @@ global.cl = function(e) {
   }
   else {
     args[0] = wrapped + ' ' + args[0];
-    if (GM.log_file) {      
+    if (GM.log_file) {
       GM.log_file.write(util.format(args) + '\n');
-    } 
-    console.log.apply(this, args);       
+    }
+    console.log.apply(this, args);
   }
-  
+
 };
 
 // Common
-global.clexec = function(cmd, withcmd, outcallback, rejcallback, args, options) {  
+global.clexec = function(cmd, withcmd, outcallback, rejcallback, args, options) {
   options = options || {};
   args = args || [];
   outcallback = outcallback || function(out, resolve) {resolve(out);};
   rejcallback = rejcallback || function(out, resolve) {resolve(out);};
-  return new Promise(function(resolve, reject) {    
+  return new Promise(function(resolve, reject) {
     const { exec } = require('child_process');
     withcmd = withcmd || 0;
-    
-    if (withcmd) {    
+
+    if (withcmd) {
       cl(`[Exec] ${cmd} ` + args.join(" "));
     }
     else {
       cl(`[Info] ${cmd}`);
     }
-    if (withcmd) {          
+    if (withcmd) {
       var childProcess = require('child_process');
       // childProcess.spawn = require('cross-spawn'); BUGGY
       var spawn = childProcess.spawn;
@@ -125,23 +125,23 @@ global.clexec = function(cmd, withcmd, outcallback, rejcallback, args, options) 
         cl(`[Debug] [Cmd] ${data}`);
         stdout.push(data);
       });
-      ls.stderr.on('data', (data) => {    
-         cl(`[Debug] [Cmd] [Error] ${data}`);    
+      ls.stderr.on('data', (data) => {
+         cl(`[Debug] [Cmd] [Error] ${data}`);
         stderr.push(data);
       });
-      ls.on('error', (err) => {           
+      ls.on('error', (err) => {
         cl(err);
-        // rejcallback(['Failed to start subprocess.', err, stderr], function() {reject()});        
+        // rejcallback(['Failed to start subprocess.', err, stderr], function() {reject()});
       });
-      ls.on('close', (code) => {        
+      ls.on('close', (code) => {
         stdout = stdout.join("\n");
         stderr = stderr.join("\n");
         // Error
         if (code !== 0) {
-          rejcallback(stderr, function() {reject(stdout)});          
+          rejcallback(stderr, function() {reject(stdout)});
           return;
         }
-        outcallback(stdout, function() {resolve(stdout)});        
+        outcallback(stdout, function() {resolve(stdout)});
       });
       /*var eprocess = exec(cmd, {maxBuffer: 1024 * 20000, encoding: "UTF-8"}, (err, stdout, stderr) => {
         cl(`[Exec finished] ${cmd}`);
@@ -152,13 +152,13 @@ global.clexec = function(cmd, withcmd, outcallback, rejcallback, args, options) 
         }
         outcallback(stdout);
         resolve(stdout);
-      });    
+      });
       if (config.debug) {
         eprocess.stdout.pipe(process.stdout);
       }*/
     }
     else {
-     outcallback('', function() {resolve('')});     
+     outcallback('', function() {resolve('')});
     }
   });
 };
@@ -170,10 +170,10 @@ GM.exec = function(cmd, args, options) {
 // clexecthen func
 const PromiseQueue = require("easy-promise-queue").default;
 var _promises = new PromiseQueue({concurrency: 1});
-global.clexecthen = function(cmd, withcmd, args, options, outcallback, rejcallback) {  
+global.clexecthen = function(cmd, withcmd, args, options, outcallback, rejcallback) {
   options = options || {};
-  args = args || {};  
-  withcmd = withcmd || 0;  
+  args = args || {};
+  withcmd = withcmd || 0;
   outcallback = outcallback || function(out, resolve) {resolve(out);};
   rejcallback = rejcallback || function(out, resolve) {resolve(out);};
   if (withcmd) {
@@ -181,7 +181,7 @@ global.clexecthen = function(cmd, withcmd, args, options, outcallback, rejcallba
   }
   _promises.add(() => {
     return clexec(cmd, withcmd, outcallback, rejcallback, args, options);
-  });  
+  });
 }
 
 GM.mysqlinit = function(done) {
@@ -201,7 +201,7 @@ GM.mysqlinit = function(done) {
   });
   this.mysqlcon = con;
   con.connect(function(err) {
-    if (err) throw err;      
+    if (err) throw err;
     done.call(t);
   });
 }
@@ -210,14 +210,14 @@ GM.shutdown = function() {
   if (this.mysqlcon) {
     this.mysqlcon.end();
   }
-  process.exit(22);  
+  process.exit(22);
 }
 
 GM.nativemysql = function(sql, done) {
   var t = this;
   this.mysqlinit(function() {
     this.mysqlcon.query(sql, function (err, result) {
-      if (err) throw err;      
+      if (err) throw err;
       done.call(t, result);
     });
   });
@@ -258,27 +258,35 @@ GM.mysqljson = function(sql, done) {
   return GM.nativemysql(sql, done);
 }
 
+
+global.module_invoke = function(callback, parentdir = 'modulefile') {
+  return module_invoke_all(callback, "../", parentdir);
+}
+
 /**
  * Invokes a hook in all enabled modules that implement it.
  * Example: Check antbuddy code
  */
-global.module_invoke_all = function(callback, basedir = 'modules') {
-  var callarguments = Array.prototype.slice.call(arguments);  
+global.module_invoke_all = function(callback, basedir = 'modules', filterdir = false) {
+  var callarguments = Array.prototype.slice.call(arguments);
   callarguments.shift();
-  callarguments.shift();  
-  var normalizedPath = require("path").join(config.basedir, basedir);  
+  callarguments.shift();
+  var normalizedPath = require("path").join(config.basedir, basedir);
   var path = require( 'path' );
   var fs = require("fs");
-  var finalresults = {};     
-  fs.readdirSync(normalizedPath).forEach(function(file) {    
+  var finalresults = {};
+  fs.readdirSync(normalizedPath).forEach(function(file) {
     if (!fs.statSync(normalizedPath + '/' + file).isDirectory()) {
       return ;
-    };    
+    };
+    if (filterdir && file != filterdir) {
+      return ;
+    }
     var modulename = path.basename(file);
     if (!fs.existsSync(path.resolve( basedir + '/' + file + '/'+ modulename +'.js' ))) {
       return ;
-    } 
-    var lib = require(path.resolve( basedir + '/' + file + '/'+ modulename +'.js' ));       
+    }
+    var lib = require(path.resolve( basedir + '/' + file + '/'+ modulename +'.js' ));
     var ret;
     if (typeof callback == 'string') {
       if (lib[callback]) {
@@ -301,7 +309,7 @@ global.module_invoke_all = function(callback, basedir = 'modules') {
       });
     }
     addGmodule(ret);
-    
+
     extend(finalresults, ret);
   });
   return finalresults;
@@ -310,7 +318,7 @@ global.module_invoke_all = function(callback, basedir = 'modules') {
 GM.argv = require('minimist')(process.argv.slice(2));
 
 /* TODO: Move to repository:
- * Export variable to bash 
+ * Export variable to bash
  */
 GM.exportbash = function(v) {
   Object.keys(v).forEach( i => {
@@ -326,7 +334,7 @@ GM.exportbash = function(v) {
           console.log(`  [${ii}]="${v[i][ii]}"`);
         }
       });
-      console.log(`)`); 
+      console.log(`)`);
     }
   });
 }

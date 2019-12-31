@@ -4,6 +4,7 @@
   },
   "dependencies": {
     "app-root-path": "^2.2.1",
+    "commander": "^4.0.1",
     "easy-promise-queue": "^0.5.4",
     "extend": "^3.0.2",
     "minimist": "^1.2.0",
@@ -30,5 +31,5 @@
   "bin": {
     "oliver-framework": "./oliver-framework"
   },
-  "version": "1.0.15"
+  "version": "1.0.16"
 }

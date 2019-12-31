@@ -1,5 +1,15 @@
 #!/bin/bash
 
+function addQuote() {
+  local C=''
+  local i
+  for i in "$@"; do
+      i="${i//\\/\\\\}"
+      C="$C \"${i//\"/\\\"}\""
+  done
+  echo "$C"
+}
+
 # remove specified host from /etc/hosts
 function removehost() {
     if [[ "$1" ]]

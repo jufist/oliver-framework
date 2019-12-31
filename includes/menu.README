@@ -1,0 +1,107 @@
+# MENU formats
+## Basic
+
+caommand, args, title, host, relativedir, type
+## Attributes
+
+```
+				'mongodbab': extend({}, basemongo, {
+					'title': 'Backup AB mongodb',
+					'callback': ['./mongodb.sh', ["../config.ab"]],
+					'channel': 'ab',
+					'callback_location': ''
+				}),
+```
+callback_location is being changed to tools. Relative to current tool folder
+## Callback format
+
+command, arguments, title, ssh(127.0.0.1/external), location('')
+
+## Simple
+var config = {};
+
+config.menu = function() {
+	return {
+		'autoupdate': {
+			'title': 'Check for update',
+			'callback': function(resolve, reject){
+   				var autoupdate = require(GM.config.basedir + '/includes/autoupdate');
+				cl("Updating starts");
+				autoupdate.check(function() {
+					cl("Updating ended");
+					resolve();
+				});
+			}
+		}
+	};
+};
+
+module.exports = config;
+
+## Complex with child
+
+var config = {};
+
+config.menu = function() {
+	var basemongo = {
+		'title': 'Backup BeeIQ mongodb',
+		'callback': ['./mongodb.sh', ["../config.beeiq"]],
+		'callback_location': 'scripts',
+		'channel': 'beeiq',
+		'cron': '* * 1 * *'
+	}
+	return {
+		'backup': {
+			"title": "Backup",
+			'children': {
+				'readme': {
+					'title': 'README',
+					'callback': ['cat', ['README.md']]
+				},
+				'mongodbab': extend({}, basemongo, {
+					'title': 'Backup AB mongodb',
+					'callback': ['./mongodb.sh', ["../config.ab"]],
+					'channel': 'ab'
+				}),
+				'mongodbbeeiq': extend({}, basemongo, {
+					'title': 'Backup BeeIQ mongodb',
+					'callback': ['./mongodb.sh', ["../config.beeiq"]],
+					'channel': 'beeiq',
+				}),
+				'mongodbabkite': extend({}, basemongo, {
+					'title': 'Backup AB Kite mongodb',
+					'callback': ['./mongodb.sh', ["../config.kite"]],
+					'channel': 'kite',
+				}),
+				'mnesia': extend({}, basemongo, {
+					'title': 'Backup Mnesia',
+					'callback': ['./mnesia.sh', ["../config.mnesia"]],
+					'channel': 'mnesia',
+				}),
+			}
+		}
+	};
+}
+
+## Supporting type for now
+
+```
+['echo', ['"123"'], "Restarting rabbitmq-server", '%(rabbitmqnode)s', '', 'rabbitmq'],
+```
+
+## Supporting relative dir
+```
+['echo', ['"123"'], "Restarting rabbitmq-server", '%(rabbitmqnode)s', '', 'rabbitmq'],
+```
+
+
+module.exports = config;
+
+## Supporting arguments
+
+```
+['echo', '$@'],
+```
+
+## Supporting node-cmd callback
+['source ./.deploy && ./control.sh "%(arguments)s"', null, null, null, null, null, 'node-cmd']
