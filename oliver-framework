@@ -7,14 +7,12 @@ exec--main() {
 
 SETUPDIR=$( dirname $(realpath "$0") )
 . $SETUPDIR/bash/common.sh
-
-definedcallbacks=("--healthstatus")
+module=$(basename $PWD)
+definedcallbacks=$($SETUPDIR/index.js $module -h | grep -o -h "[[:alpha:]]*--[[:alpha:]-]*" | tr '\n' ' ')
 callback="$1"
 shift
 if [[ " ${definedcallbacks[@]} " =~ " ${callback} " ]]; then
-  module=$(basename $PWD)
   arg=$(addQuote "$@")
-  echo "$arg"
   cmd="$SETUPDIR/index.js $module $callback $arg"
   echo "[Info][Exec] via node. $cmd"
   eval $cmd
