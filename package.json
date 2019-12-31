@@ -12,7 +12,7 @@
     "promise-foreach": "^1.0.23",
     "sprintf-js": "^1.1.2"
   },
-  "description": "Sharing common functions/features",
+  "description": "Sharing common functions/features and tools",
   "devDependencies": {},
   "license": "ISC",
   "main": "common.js",
@@ -22,10 +22,13 @@
   "readmeFilename": "README.md",
   "repository": {
     "type": "git",
-    "url": "ssh://git@repo.htk.me:2212/all/tech/libs/oliver-framework.git"
+    "url": "ssh://git@github.com/antbuddy-share/oliver-framework.git"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "version": "1.0.14"
+  "bin": {
+    "oliver-framework": "./oliver-framework"
+  },
+  "version": "1.0.15"
 }

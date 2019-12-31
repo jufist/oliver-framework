@@ -1,0 +1,11 @@
+#!/bin/bash -i
+
+exec--main() {
+  local cmd=`basename $0`
+  declare -F | grep exec-- | sed 's/declare -f exec/'$cmd' /'
+}
+
+
+SETUPDIR=$( dirname $(realpath "$0") )
+. $SETUPDIR/bash/common.sh
+oliver-common-exec "$@"
