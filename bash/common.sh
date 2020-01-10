@@ -221,6 +221,11 @@ verify_phone() {
 
 fn_exists() { test x$(type -t $1) = xfunction; }
 
+exechelplist() {
+  local cmd=`basename $0`
+  declare -F | grep exec-- | sed 's/declare -f exec/'$cmd' /'
+}
+
 oliver-common-exec() {
   SETUPDIR=$( dirname $(realpath "$0") )
   if [[ "$1" == "--check-existed" ]]; then
@@ -243,8 +248,8 @@ oliver-common-exec() {
   fn_exists $verifyaction && $verifyaction "$@"
 
   action="exec$action"
-  $action "$@"
-
+  fn_exists $action && $action "$@"
+  fn_exists $action || exechelplist
 }
 
 execInEachType () {
