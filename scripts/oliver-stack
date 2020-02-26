@@ -1,0 +1,140 @@
+#!/bin/bash
+
+OLIVERDIR=$(dirname $(dirname $(realpath "$0")))
+
+exec--help() {
+  echo "# Read following examples"
+  echo ". .env.production"
+  echo "oliver-stack --help"
+  echo "oliver-stack PUBLICIP DOCKERFOLDERTEMPLATE NEWFOLDER"
+  #echo "oliver-stack --updateip OLDIP NEWIP DOCKERFOLDER"
+  echo "oliver-stack --stop IP DOCKERFOLDER"
+  echo "oliver-stack --snapshot IMAGE CONTAINERNAME"
+  echo "oliver-stack --snapshot-restore IMAGE CONTAINERNAME"
+}
+
+exec--snapshot() {
+  local IMAGE=$1
+  local CONTAINERNAME=$2
+  docker save $IMAGE > /tmp/$IMAGE.tar
+  docker export $CONTAINERNAME > /tmp/$CONTAINERNAME.export.tar
+}
+
+exec--snapshot-restore() {
+  read -r -p "After restoring, the image will be latest data from /tmp/$CONTAINERNAME.export.tar!"
+  local IMAGE=$1
+  local CONTAINERNAME=$2
+  docker load < /tmp/$IMAGE.tar
+  cat /tmp/$CONTAINERNAME.export.tar | docker import - $IMAGE
+}
+
+addIP() {
+  IP=$1
+  cmd="sudo ip addr add $IP/$SUBNETIPON broadcast $BROADCAST dev $ETHERNET"
+  echo $cmd
+}
+
+removeIP() {
+  IP=$1
+  cmd="sudo ip addr delete $IP/$SUBNETIPON broadcast $BROADCAST dev $ETHERNET"
+  echo $cmd
+}
+
+replaceIP() {
+  echo "# PUBLICIP:$PUBLICIP"
+  for f in $(find $1 -type f);
+  do
+    envsubst '$PUBLICIP' < $f > /tmp/x.txt
+    cat /tmp/x.txt  > $f
+  done
+}
+
+# Main action
+# Adding new public IP and start docker
+action() {
+  confirm="n"
+  read -r -p "Are you sure. Data will be lost. Undoable? [y/N] " response
+  case "$response" in
+      [yY][eE][sS]|[yY])
+          confirm="y"
+          ;;
+      *)
+          confirm="n"
+          ;;
+  esac
+  echo "$@"
+  export PUBLICIP="$1"
+  addIP $1
+
+  echo "rm -rf $3"
+  echo "cp -rp '$2/' $3"
+  echo "replaceIP $3"
+  echo "cd $3"
+  echo "docker-compose up"
+  echo "cd -"
+  echo "# ssh to $1:22 with root:myrootpwd"
+  echo "# To NAT, edit docker-compose of service"
+  echo "#ports:"
+  echo "#  - $1:22:22"
+
+  if [[ "$confirm" == "y" ]]; then
+    echo "[Info] Executing"
+    rm -rf $3
+    cp -rp $2 $3
+    replaceIP $3
+    echo "cd $3"
+    echo "docker-compose up"
+    echo "cd -"
+    echo "# ssh to $1:22 with root:myrootpwd"
+    echo "# To NAT, edit docker-compose of service"
+    echo "#ports:"
+    echo "#  - $1:22:22"
+  fi
+}
+
+
+# Update IP
+# Adding new public IP and start docker
+stop() {
+  echo "$@"
+  export PUBLICIP="$1"
+  removeIP $1
+  echo "cd $3"
+  echo "docker-compose stop"
+  echo "cd -"
+}
+
+# for i in "$@"
+# do
+#   case $i in
+#     --help)
+#     exec--help
+#     shift
+#     exit
+#     ;;
+#     # --updateip)
+#     # updateIP "$@"
+#     # shift
+#     # exit
+#     # ;;
+#     --stop)
+#     shift
+#     stop "$@"
+#     exit
+#     ;;
+#     *)
+#     # unknown option
+#     ;;
+#   esac
+#   done
+#
+
+
+# if [[ "$1" == "" || "$ETHERNET" == "" ]]; then
+#   help
+#   exit 1
+# fi
+# action "$@"
+
+. $OLIVERDIR/bash/common.sh
+oliver-common-exec --check-existed '$M0 $M1' "$@"
