@@ -21,9 +21,9 @@ exec--snapshot() {
 }
 
 exec--snapshot-restore() {
-  read -r -p "After restoring, the image will be latest data from /tmp/$CONTAINERNAME.export.tar!"
   local IMAGE=$1
   local CONTAINERNAME=$2
+  read -r -p "After restoring, the image will be latest data from /tmp/$CONTAINERNAME.export.tar!"
   docker load < /tmp/$IMAGE.tar
   cat /tmp/$CONTAINERNAME.export.tar | docker import - $IMAGE
 }
