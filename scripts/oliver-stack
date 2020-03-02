@@ -16,7 +16,7 @@ exec--help() {
 exec--snapshot() {
   local IMAGE=$1
   local CONTAINERNAME=$2
-  docker save $IMAGE > /tmp/$IMAGE.tar
+  docker save $IMAGE > /tmp/$CONTAINERNAME.image.tar
   docker export $CONTAINERNAME > /tmp/$CONTAINERNAME.export.tar
 }
 
@@ -24,7 +24,7 @@ exec--snapshot-restore() {
   local IMAGE=$1
   local CONTAINERNAME=$2
   read -r -p "After restoring, the image will be latest data from /tmp/$CONTAINERNAME.export.tar!"
-  docker load < /tmp/$IMAGE.tar
+  docker load < /tmp/$CONTAINERNAME.image.tar
   cat /tmp/$CONTAINERNAME.export.tar | docker import - $IMAGE
 }
 
