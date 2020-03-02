@@ -29,7 +29,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "oliver-framework": "./oliver-framework"
+    "oliver-framework": "./oliver-framework",
+    "oliver-stack": "./scripts/oliver-stack"    
   },
   "version": "1.0.17"
 }
