@@ -1,5 +1,8 @@
 # Oliver Framework
 ## Setup
+- lib: 
+    - Alpine: apk add --virtual build_deps gettext
+    - Debian: apt intall gettext
 - package.json
 ```
   "dependencies": {
