@@ -256,7 +256,15 @@ execIET() {
     local item=$1
     local callback=$2
     local command=$3
-    command="ssh $item '$command'"    
+    local user=$4
+    if [[ "$user" == "" ]]; then
+        command="ssh $item '$command'"
+    else
+        # Allow other users to run, not just root
+        # "sudo -s su kazoo -c '
+        command="ssh $item 'sudo $command'"
+    fi
+
     if [[ "$callback" != "" ]] ; then
         echo "[Exec] $command"
         eval $command
@@ -271,7 +279,15 @@ execIETdocker() {
     local item=$1
     local callback=$2
     local command=$3
-    command="docker exec -ti $item /bin/bash -c '$command'"
+    local user=$4
+    if [[ "$user" == "" ]]; then
+        command="docker exec -ti $item /bin/bash -c '$command'"
+    else
+        # Allow other users to run, not just root
+        # "sudo -s su kazoo -c '
+        command="docker exec -ti -u root $item /bin/bash -c '$command'"
+    fi
+
     if [[ "$callback" != "" ]] ; then
         echo "[Exec] $command"
         eval $command
@@ -289,6 +305,7 @@ execInEachType () {
     local callback=$2
     local command=""
     local MA_number=$3
+    local user=$4
     if [[ "$MA_number" != "" ]] ; then
         typevar=(${typevar[$MA_number]})
     fi
@@ -299,10 +316,9 @@ execInEachType () {
         NODETYPE=$(echo "$item::" | cut -d ":" -f 2)
         item=$(echo "$item::" | cut -d ":" -f 1)
         command="${callback//NODE/$item}"
-        execIET$NODETYPE "$item" "$callback" "$command"
+        execIET$NODETYPE "$item" "$callback" "$command" "$user"
     done
 }
-
 
 OLIVERDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && cd ../ >/dev/null && pwd )"
 # PATH="$PATH:$OLIVERDIR/scripts"
