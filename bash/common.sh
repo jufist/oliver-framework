@@ -277,4 +277,5 @@ execInEachType () {
 }
 
 OLIVERDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && cd ../ >/dev/null && pwd )"
+CONTROLDIR="$OLIVERDIR"
 # PATH="$PATH:$OLIVERDIR/scripts"
