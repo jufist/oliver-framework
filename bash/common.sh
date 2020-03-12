@@ -252,30 +252,57 @@ oliver-common-exec() {
   fn_exists $action || exechelplist
 }
 
-execInEachType () {
-	local origtype="$1"
-	local type="nodes_${origtype}s"
-	#local -n typevar
-	eval "typevar=(\${${type}[@]})"
-	local callback=$2
-	local command=""
-	local MA_number=$3
-	if [[ "$MA_number" != "" ]] ; then
-		typevar=(${typevar[$MA_number]})
-	fi
-	for item in "${typevar[@]}"
-	do
-		command="${callback//NODE/$item}"
-		command="ssh $item '$command'"
-		if [[ "$callback" != "" ]] ; then
-			echo "[Exec] $command"
-			eval $command
-		else
-			ssh $item
-		fi
-	done
+execIET() {
+    local item=$1
+    local callback=$2
+    local command=$3
+    command="ssh $item '$command'"    
+    if [[ "$callback" != "" ]] ; then
+        echo "[Exec] $command"
+        eval $command
+    else
+        echo "[SSH] SSH to $item"
+        ssh $item
+    fi
 }
 
+
+execIETdocker() {
+    local item=$1
+    local callback=$2
+    local command=$3
+    command="docker exec -ti $item /bin/bash -c '$command'"
+    if [[ "$callback" != "" ]] ; then
+        echo "[Exec] $command"
+        eval $command
+    else
+        echo "[Docker] Docker to $item"
+        docker exec -ti $item /bin/bash
+    fi
+}
+
+execInEachType () {
+    local origtype="$1"
+    local type="nodes_${origtype}s"
+    #local -n typevar
+    eval "typevar=(\${${type}[@]})"
+    local callback=$2
+    local command=""
+    local MA_number=$3
+    if [[ "$MA_number" != "" ]] ; then
+        typevar=(${typevar[$MA_number]})
+    fi
+    local NODETYPE
+    for item in "${typevar[@]}"
+    do
+
+        NODETYPE=$(echo "$item::" | cut -d ":" -f 2)
+        item=$(echo "$item::" | cut -d ":" -f 1)
+        command="${callback//NODE/$item}"
+        execIET$NODETYPE "$item" "$callback" "$command"
+    done
+}
+
+
 OLIVERDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && cd ../ >/dev/null && pwd )"
-CONTROLDIR="$OLIVERDIR"
 # PATH="$PATH:$OLIVERDIR/scripts"
