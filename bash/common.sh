@@ -320,5 +320,15 @@ execInEachType () {
     done
 }
 
+# Example basheval echo "1"
+# basheval "echo 1 | grep 1"
+basheval() {
+    local cmd1=$1
+    shift
+    local cmd=$(addQuote "$@")
+    echo "[Exec] $cmd1 $cmd"
+    eval "$cmd1 $cmd"
+}
+
 OLIVERDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && cd ../ >/dev/null && pwd )"
 # PATH="$PATH:$OLIVERDIR/scripts"
