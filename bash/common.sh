@@ -1,5 +1,10 @@
 #!/bin/bash
 
+function textBetweenTag() {
+  local tag=$2
+  echo "$1" | sedd -n "/<$tag/,/\/$tag>/p"  
+}
+
 function addQuote() {
   local C=''
   local i
