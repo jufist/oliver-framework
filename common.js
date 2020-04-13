@@ -1,18 +1,28 @@
 GM = global.GM || {};
+
+var fs = require('fs');
+var util = require('util');
 var appRoot = require('path').dirname(require('path').dirname(__dirname));
 var config;
 try {
-  config = require(appRoot + '/config.js');
+    config = require(appRoot + '/config.js');
+    let localconfig = LOCALDIR!="" ? LOCALDIR + "/.control.js" : "";
+    let localconfigvar = {};
+    try {
+      if (fs.existsSync(localconfig)) {
+          localconfigvar = require(localconfig);
+      }
+    } catch(err) {
+        // Nothing
+        console.error(err);
+    }
+    config = {...config, ...localconfigvar};
 }
 catch (e) {
   config = {};
 }
 config = config || {};
-
-config = config || {};
 config.basedir = appRoot + '';
-var fs = require('fs');
-var util = require('util');
 global.sprintf = require('sprintf-js').sprintf;
 global.vsprintf = require('sprintf-js').vsprintf;
 
