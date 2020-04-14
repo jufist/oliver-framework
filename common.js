@@ -4,6 +4,7 @@ var fs = require('fs');
 var util = require('util');
 var appRoot = require('path').dirname(require('path').dirname(__dirname));
 var config;
+let LOCALDIR=global.LOCALDIR || "";
 try {
     config = require(appRoot + '/config.js');
     let localconfig = LOCALDIR!="" ? LOCALDIR + "/.control.js" : "";
@@ -19,9 +20,11 @@ try {
     config = {...config, ...localconfigvar};
 }
 catch (e) {
-  config = {};
+    config = {};
+    console.error(e);
 }
 config = config || {};
+
 config.basedir = appRoot + '';
 global.sprintf = require('sprintf-js').sprintf;
 global.vsprintf = require('sprintf-js').vsprintf;
