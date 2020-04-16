@@ -23,15 +23,15 @@ function removehost() {
 
         if [ -n "$(grep $HOSTNAME /etc/hosts)" ]
         then
-            echo "$HOSTNAME Found in your /etc/hosts, Removing now...";
+            ech "log" "$HOSTNAME Found in your /etc/hosts, Removing now...";
             sudo sed -i".bak" "/$HOSTNAME/d" /etc/hosts
         else
-            echo "$HOSTNAME was not found in your /etc/hosts";
+            ech "log" "$HOSTNAME was not found in your /etc/hosts";
         fi
     else
-        echo "Error: missing required parameters."
-        echo "Usage: "
-        echo "  removehost domain"
+        ech "error" "Error: missing required parameters."
+        ech "error" "Usage: "
+        ech "error" "  removehost domain"
     fi
 }
 
@@ -46,11 +46,11 @@ function addhost() {
 
         if [[ "$OVERWRITE" == "0"  && -n "$(grep $HOSTNAME /etc/hosts)" ]]
             then
-                echo "$HOSTNAME already exists:";
-                echo $(grep $HOSTNAME /etc/hosts);
+                ech "error" "$HOSTNAME already exists:";
+                ech "error" $(grep $HOSTNAME /etc/hosts);
             else
                 removehost "$HOSTNAME"
-                echo "Adding $HOSTNAME to your /etc/hosts";
+                ech "log" "Adding $HOSTNAME to your /etc/hosts";
                 printf "%s\t%s\n" "$IP" "$HOSTNAME" | sudo tee -a /etc/hosts > /dev/null;
 
                 if [ -n "$(grep $HOSTNAME /etc/hosts)" ]
@@ -69,11 +69,11 @@ function addhost() {
 }
 
 forceup () {
-	echo "[Ok] Service up"
+	ech "log" "[Ok] Service up"
 	if [ "$TEST" != "1" ] ; then
 		include/folderexec.sh up
 	else
-		echo "[Notice] Ignore executing by option -t"
+		ech "notice" "[Notice] Ignore executing by option -t"
 	fi
 }
 
@@ -271,10 +271,10 @@ execIET() {
     fi
 
     if [[ "$callback" != "" ]] ; then
-        echo "[Exec] $command"
+        ech "log" "[Exec] $command"
         eval $command
     else
-        echo "[SSH] SSH to $item"
+        ech "log" "[SSH] SSH to $item"
         ssh $item
     fi
 }
