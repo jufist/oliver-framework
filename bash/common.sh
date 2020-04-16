@@ -335,5 +335,40 @@ basheval() {
     eval "$cmd1 $cmd"
 }
 
+ech() {
+    local type=$1
+    if [[ 'log debug notice error alert warn' =~ "$type" ]]; then
+        shift
+    else
+        type="debug"
+    fi
+
+    local short=$1
+    if [[ 'head tail full' =~ "$short" ]]; then
+        shift
+    else
+        short="head"
+    fi
+
+    if [[ "$DEBUG" == "" && "$type" == "debug" ]]; then
+        return
+    fi
+
+#    if [[ "$type" == "error" ]]; then
+ #       echo "[${type}] $@" >&2
+  #      return 
+   # fi
+
+    local out="[${type}] $@"
+    if [[ "$short" == "head" ]]; then
+        out=$(echo "$out" | head -c 300)"..."
+    fi
+    if [[ "$short" == "tail" ]]; then
+        out=$(echo "$out" | tail -c 300)"..."
+    fi
+
+    echo "$out" >&2
+}
+
 OLIVERDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && cd ../ >/dev/null && pwd )"
 # PATH="$PATH:$OLIVERDIR/scripts"
