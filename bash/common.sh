@@ -331,7 +331,7 @@ basheval() {
     local cmd1=$1
     shift
     local cmd=$(addQuote "$@")
-    echo "[Exec] $cmd1 $cmd"
+    ech "log" "[exec] $cmd1 $cmd"
     eval "$cmd1 $cmd"
 }
 
