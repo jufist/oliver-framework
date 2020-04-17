@@ -371,12 +371,26 @@ ech() {
 }
 
 # insert_after_token "content" "token" "piecetoadd"
+# use ^^: start of content
+# use $$: end of content
 insert_after_token() {
     local token=$2
     local toadd=$3
     local seddable=$(echo "$toadd" | sed '$!s/$/\\/')
     local tkseddable=$(echo "$token" | sed '$!s/$/\\/' | sed 's/\//\\\//g')
-    echo "$1" | sed -e "/$tkseddable/a $seddable"
+    case $token in
+    "^^")
+      echo "$toadd"
+      echo "$1"
+      ;;
+    "$$")      
+      echo "$1"
+      echo "$toadd"
+      ;;
+    *)
+      echo "$1" | sed -e "/$tkseddable/a $seddable"
+      ;;          
+    esac
 }
 
 # replace_after_token "content" "token" "replacetoken" "piecetoadd"
