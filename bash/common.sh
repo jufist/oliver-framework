@@ -370,5 +370,20 @@ ech() {
     echo "$out" >&2
 }
 
+# insert_after_token "content" "token" "piecetoadd"
+insert_after_token() {
+    local token=$2
+    local toadd=$3
+    local seddable=$(echo "$toadd" | sed '$!s/$/\\/')
+    local tkseddable=$(echo "$token" | sed '$!s/$/\\/' | sed 's/\//\\\//g')
+    echo "$1" | sed -e "/$tkseddable/a $seddable"
+}
+
+# replace_after_token "content" "token" "replacetoken" "piecetoadd"
+replace_after_token() {
+    local newout=$(echo "$1" | grep -v -F "$3")
+    insert_after_token "$newout" "$2" "$4"
+}
+
 OLIVERDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && cd ../ >/dev/null && pwd )"
 # PATH="$PATH:$OLIVERDIR/scripts"
