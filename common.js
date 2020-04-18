@@ -1,23 +1,37 @@
 GM = global.GM || {};
 
 var fs = require('fs');
+var path = require('path');
 var util = require('util');
 var appRoot = require('path').dirname(require('path').dirname(__dirname));
 var config;
 let LOCALDIR=global.LOCALDIR || "";
-try {
-    config = require(appRoot + '/config.js');
-    let localconfig = LOCALDIR!="" ? LOCALDIR + "/.control.js" : "";
+let loadconfig = (localconfig) => {
     let localconfigvar = {};
     try {
-      if (fs.existsSync(localconfig)) {
-          localconfigvar = require(localconfig);
-      }
+        if (fs.existsSync(localconfig)) {
+            localconfigvar = require(localconfig);
+        }
+        else {
+            return {};
+        }
     } catch(err) {
         // Nothing
         console.error(err);
+        return {};
     }
-    config = {...config, ...localconfigvar};
+    return {...{localconfig: path.dirname(localconfig)}, ...localconfigvar};
+}
+
+try {
+    config = require(appRoot + '/config.js');
+    let localconfig = LOCALDIR!="" ? LOCALDIR + "/.control.js" : "";
+    if (localconfig!='') {
+        let localconfigvar = loadconfig(localconfig);
+        config = {...config, ...localconfigvar};
+        localconfigvar = loadconfig(path.dirname(LOCALDIR) + "/.control.js");
+        config = {...config, ...localconfigvar};
+    }
 }
 catch (e) {
     config = {};
