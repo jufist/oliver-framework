@@ -182,8 +182,9 @@ myargs () {
 			# echo "$short:$long"
 			case $i in
 				    -$short|--$long|-$short=*|--$long=*)
-					varname="MA_$long"
-				    export $varname="${i#*=}"
+					      varname="MA_$long"
+                varname=$(echo "$varname" | sed 's/-/_/g')
+				    export "$varname=${i#*=}"
 			    ;;
 			esac
 		done
