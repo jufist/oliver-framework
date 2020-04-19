@@ -384,7 +384,7 @@ insert_after_token() {
       echo "$toadd"
       echo "$1"
       ;;
-    "$$")      
+    '$$')      
       echo "$1"
       echo "$toadd"
       ;;
