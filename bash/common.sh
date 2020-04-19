@@ -400,5 +400,14 @@ replace_after_token() {
     insert_after_token "$newout" "$2" "$4"
 }
 
+# replace_between_token "content" "token" "# replacetoken" "piecetoadd"
+replace_between_token() {
+    local newout=$(echo "$1" | sed "/$3 start/,/$3 end/d")
+    local toreplace="$3 start
+$4
+$3 end"
+    insert_after_token "$newout" "$2" "$toreplace"
+}
+
 OLIVERDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && cd ../ >/dev/null && pwd )"
 # PATH="$PATH:$OLIVERDIR/scripts"
