@@ -374,6 +374,7 @@ ech() {
 # insert_after_token "content" "token" "piecetoadd"
 # use ^^: start of content
 # use $$: end of content
+# Be careful of $$. Use singlequote for '$$'
 insert_after_token() {
     local token=$2
     local toadd=$3
