@@ -29,8 +29,10 @@ try {
     if (localconfig!='') {
         let localconfigvar = loadconfig(localconfig);
         config = {...config, ...localconfigvar};
-        localconfigvar = loadconfig(path.dirname(LOCALDIR) + "/.control.js");
-        config = {...config, ...localconfigvar};
+        if (!Object.keys(localconfigvar).length) {
+          localconfigvar = loadconfig(path.dirname(LOCALDIR) + "/.control.js");
+          config = {...config, ...localconfigvar};
+        }
     }
 }
 catch (e) {
