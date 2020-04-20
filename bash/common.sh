@@ -410,5 +410,9 @@ $3 end"
     insert_after_token "$newout" "$2" "$toreplace"
 }
 
+alias rsync="rsync -ravzpt"
+alias rsyncroot='rsync --rsync-path="sudo rsync"'
+alias rsyncputty="pscp -v -load"
+
 OLIVERDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && cd ../ >/dev/null && pwd )"
 # PATH="$PATH:$OLIVERDIR/scripts"
