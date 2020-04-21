@@ -298,7 +298,7 @@ execIETdocker() {
         ech "log" "[exec] $command"
         eval $command
     else
-        echo "log" "[docker] Docker to $item"
+        ech "log" "[docker] Docker to $item"
         docker exec -ti $item /bin/bash
     fi
 }
