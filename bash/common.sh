@@ -403,7 +403,8 @@ replace_after_token() {
 
 # replace_between_token "content" "token" "# replacetoken" "piecetoadd"
 replace_between_token() {
-    local newout=$(echo "$1" | sed "/$3 start/,/$3 end/d")
+    local tksed=$(echo "$3" | sed '$!s/$/\\/' | sed 's/\//\\\//g')
+    local newout=$(echo "$1" | sed "/$tksed start/,/$tksed end/d")
     local toreplace="$3 start
 $4
 $3 end"
