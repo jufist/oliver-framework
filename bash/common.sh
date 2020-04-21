@@ -295,10 +295,10 @@ execIETdocker() {
     fi
 
     if [[ "$callback" != "" ]] ; then
-        echo "[Exec] $command"
+        ech "log" "[exec] $command"
         eval $command
     else
-        echo "[Docker] Docker to $item"
+        echo "log" "[docker] Docker to $item"
         docker exec -ti $item /bin/bash
     fi
 }
