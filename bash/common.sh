@@ -411,6 +411,12 @@ $3 end"
     insert_after_token "$newout" "$2" "$toreplace"
 }
 
+switchenv() {
+  [ -f .env.${namespace} ] && cp .env.${namespace} .env
+  [ -f .control.${namespace}.js ] && cp .control.${namespace}.js .control.js
+  [ -f config.${namespace}.js ] && cp config.${namespace}.js config.js
+}
+
 alias rsync="rsync -ravzpt"
 alias rsyncroot='rsync --rsync-path="sudo rsync"'
 alias rsyncputty="pscp -v -load"
