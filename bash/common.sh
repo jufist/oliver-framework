@@ -417,6 +417,12 @@ switchenv() {
   [ -f config.${namespace}.js ] && cp config.${namespace}.js config.js
 }
 
+loadenv() {
+  [ -f .env.all ] && . .env.all
+  [ -f .env.${namespace} ] && . .env.${namespace}  
+}
+
+
 alias rsync="rsync -ravzpt"
 alias rsyncroot='rsync --rsync-path="sudo rsync"'
 alias rsyncputty="pscp -v -load"
