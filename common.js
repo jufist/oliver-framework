@@ -6,6 +6,7 @@ var util = require('util');
 var appRoot = require('path').dirname(require('path').dirname(__dirname));
 var config;
 let LOCALDIR=global.LOCALDIR || "";
+let NAMESPACE=global.NAMESPACE || "";
 let loadconfig = (localconfigdir, namespace) => {
     namespace = namespace || "";
     let localconfigvar = {};
