@@ -6,31 +6,40 @@ var util = require('util');
 var appRoot = require('path').dirname(require('path').dirname(__dirname));
 var config;
 let LOCALDIR=global.LOCALDIR || "";
-let loadconfig = (localconfig) => {
+let loadconfig = (localconfigdir, namespace) => {
+    namespace = namespace || "";
     let localconfigvar = {};
+    let localconfig = localconfigdir + "/.control.js";
+    let localconfig2 = localconfigdir + "/.control." + namespace + ".js";
     try {
-        if (fs.existsSync(localconfig)) {
-            localconfigvar = require(localconfig);
+        if (fs.existsSync(localconfig2)) {
+            localconfigvar = require(localconfig2);            
         }
         else {
-            return {};
+            if (fs.existsSync(localconfig)) {
+                localconfigvar = require(localconfig);
+            }
+            else {
+                return {};
+            }
         }
     } catch(err) {
         // Nothing
         console.error(err);
         return {};
     }
-    return {...{localconfig: path.dirname(localconfig)}, ...localconfigvar};
+    return {...{localconfig: localconfigdir}, ...localconfigvar};
 }
 
 try {
+    let namespace = NAMESPACE || "";
     config = require(appRoot + '/config.js');
-    let localconfig = LOCALDIR!="" ? LOCALDIR + "/.control.js" : "";
+    let localconfig = LOCALDIR!="" ? LOCALDIR : "";
     if (localconfig!='') {
-        let localconfigvar = loadconfig(localconfig);
+        let localconfigvar = loadconfig(localconfig, namespace);
         config = {...config, ...localconfigvar};
         if (!Object.keys(localconfigvar).length) {
-          localconfigvar = loadconfig(path.dirname(LOCALDIR) + "/.control.js");
+          localconfigvar = loadconfig(path.dirname(localconfig), namespace);
           config = {...config, ...localconfigvar};
         }
     }
