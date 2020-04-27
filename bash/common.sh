@@ -328,12 +328,19 @@ execInEachType () {
 
 # Example basheval echo "1"
 # basheval "echo 1 | grep 1"
+# basheval --dry-run echo 1
 basheval() {
+    dry_run=""
+    if [[ "$1" == "--dry-run" ]]; then
+        dry_run=$1
+        shift
+    fi
+
     local cmd1=$1
     shift
     local cmd=$(addQuote "$@")
     ech "log" "[exec] $cmd1 $cmd"
-    eval "$cmd1 $cmd"
+    [[ "$dry_run" == "" ]] && eval "$cmd1 $cmd"
 }
 
 ech() {
