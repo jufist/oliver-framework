@@ -287,11 +287,11 @@ execIETdocker() {
     local command=$3
     local user=$4
     if [[ "$user" == "" ]]; then
-        command="docker exec -ti $item /bin/bash -c '$command 2>/dev/null'"
+        command="docker exec -i $item /bin/bash -c '$command'"
     else
         # Allow other users to run, not just root
         # "sudo -s su kazoo -c '
-        command="docker exec -ti -u root $item /bin/bash -c '$command 2>/dev/null'"
+        command="docker exec -i -u root $item /bin/bash -c '$command'"
     fi
 
     if [[ "$callback" != "" ]] ; then
