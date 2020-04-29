@@ -166,29 +166,43 @@ myconfirm () {
 # myargs inputargs definedargs
 # Now we have:
 # Using: $MA_local
+# Also we have ${newargs[@]}
+# inputargs=("$@")
+# definedargs=("n|number", "s|sudo", "p|path")
+# myargs inputargs definedargs
+# set -- "${newargs[@]}"
 myargs () {
-	local -n arr=$1
-	local -n args=$2
-	local short=""
-	local long=""
-	local varname="x"
+  local -n arr=$1
+  local -n args=$2
+  local short=""
+  local long=""
+  local varname="x"
+  export newargs=()
+  local found=""
+  for i in "${arr[@]}"
+  do
 
-	for i in "${arr[@]}"
-	do
-		for j in "${args[@]}"
-		do
-			short="$(echo $j | cut -d'|' -f1)"
-			long="$(echo $j | cut -d'|' -f2)"
-			# echo "$short:$long"
-			case $i in
-				    -$short|--$long|-$short=*|--$long=*)
-					      varname="MA_$long"
+      found=""
+    for j in "${args[@]}"
+    do
+      short="$(echo $j | cut -d'|' -f1)"
+      long="$(echo $j | cut -d'|' -f2)"
+      # echo "$short:$long"
+      case $i in
+            -$short|--$long|-$short=*|--$long=*)
+                varname="MA_$long"
                 varname=$(echo "$varname" | sed 's/-/_/g')
-				    export "$varname=${i#*=}"
-			    ;;
-			esac
-		done
-	done
+                export "$varname=${i#*=}"
+                found="yes"
+          ;;
+      esac
+    done
+
+    # If not found
+    if [[ "$found" == "" ]]; then
+      newargs+=("${i#*=}")
+    fi
+  done
 }
 
 preventExist() {
