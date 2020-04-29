@@ -200,7 +200,7 @@ myargs () {
 
     # If not found
     if [[ "$found" == "" ]]; then
-      newargs+=("${i#*=}")
+      newargs+=("${i}")
     fi
   done
 }
