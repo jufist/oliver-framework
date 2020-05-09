@@ -32,9 +32,17 @@ let loadconfig = (localconfigdir, namespace) => {
     return {...{localconfig: localconfigdir}, ...localconfigvar};
 }
 
+
 try {
     let namespace = NAMESPACE || "";
-    config = require(appRoot + '/config.js');
+    let grouppath = `${appRoot}/groups/${namespace}/config.js`;
+    if (fs.existsSync(grouppath)) {
+        config = require(grouppath);
+    }
+    else {
+        config = require(appRoot + '/config.js');
+    }
+
     let localconfig = LOCALDIR!="" ? LOCALDIR : "";
     if (localconfig!='') {
         let localconfigvar = loadconfig(localconfig, namespace);
