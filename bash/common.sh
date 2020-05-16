@@ -190,8 +190,8 @@ myargs () {
       # echo "$short:$long"
       case $i in
             -$short|--$long|-$short=*|--$long=*)
-                varname="MA_$long"
-                varname=$(echo "$varname" | sed 's/-/_/g')
+                varname="MA_$long"                                
+		varname=$(echo "$varname" | sed 's/[-]/_/g' | sed 's/[^0-9a-zA-Z_]//g')
                 export "$varname=${i#*=}"
                 found="yes"
           ;;
