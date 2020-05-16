@@ -55,7 +55,7 @@ try {
 }
 catch (e) {
     config = {};
-    console.error(e);
+    console.warn(e);
 }
 config = config || {};
 
