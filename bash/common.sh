@@ -439,11 +439,10 @@ switchenv() {
 }
 
 loadenv() {
-  [ -f .env.all ] && . .env.all
-  [[ "${namespace}" == "" ]] && [ -f .env ] && . .env
-  [ -f .env.${namespace} ] && . .env.${namespace}  
+    [ -f ./.env.all ] && . ./.env.all
+    [[ "${namespace}" == "" ]] && [ -f ./.env ] && . ./.env
+    [ -f ./.env.${namespace} ] && . ./.env.${namespace}  
 }
-
 
 alias rsync="rsync -ravzpt"
 alias rsyncroot='rsync --rsync-path="sudo rsync"'
