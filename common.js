@@ -40,7 +40,12 @@ try {
         config = require(grouppath);
     }
     else {
-        config = require(appRoot + '/config.js');
+        if (fs.existsSync(appRoot + '/config.js')) {
+            config = require(appRoot + '/config.js');
+        }
+        else {
+            config = {};
+        }
     }
 
     let localconfig = LOCALDIR!="" ? LOCALDIR : "";
