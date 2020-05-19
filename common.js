@@ -65,6 +65,41 @@ catch (e) {
 config = config || {};
 
 config.basedir = appRoot + '';
+var jsdom = require('jsdom');
+const { JSDOM } = jsdom;
+const { window } = new JSDOM();
+const { document } = (new JSDOM('')).window;
+// global.document = document;
+var $ = jQuery = require('jquery')(window);
+GM.evalvar = (item, y) => {
+    let PHASE = {...item};
+    Object.keys(PHASE).forEach((key) => {
+        let iitem = item[key];
+        if ($.isPlainObject(iitem)) {
+            PHASE[key + 'b64'] = encode.encode(JSON.stringify(iitem), 'base64');
+        }
+    });
+    
+    // console.error(['DEBUG', item]);
+    let z=JSON.stringify(y).replace(/\\n/g, "cRnN");
+    // backslash issue
+    z=z.replace(/\\/g, "\\\\");
+    z=`z =\`${z}\``;
+    // console.error(['DEBUG1', z, y]);
+    eval(z);
+    // console.error(['DEBUG2', z]);
+    z=`z = ${z}`;
+    z = z.replace(/cRnN/g, '" + \'\\n\' + "');
+    // console.error(['DEBUG2A', z]);
+    eval(z);
+    // console.error(['DEBUG3', z]);
+    // convert cRnN
+    // Object.keys(z).forEach((k) => {
+    // z[k] = $.type(z[k]) !== 'string' ? z[k] : z[k].replace(/cRnN/g, "\n");
+    //});
+    // console.log(['DEBUG4', z]);
+    return z;
+};
 global.sprintf = require('sprintf-js').sprintf;
 global.vsprintf = require('sprintf-js').vsprintf;
 
