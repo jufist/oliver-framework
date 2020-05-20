@@ -243,7 +243,19 @@ fn_exists() { test x$(type -t $1) = xfunction; }
 
 exechelplist() {
   local cmd=`basename $0`
-  declare -F | grep exec-- | sed 's/declare -f exec/'$cmd' /'
+  local funcs=($(declare -F | grep exec-- | sed 's/declare -f exec//'))
+  local i
+  for i in "${funcs[@]}"
+  do
+      local cmd2="$cmd $i"
+      i="vars_parse$i"
+      ! fn_exists $i && continue
+      local def=$(type $i)
+      echo "------------"
+      echo "$cmd2"
+      echo ""
+      echo "$def" | grep -F "\$" | grep -v -F "\$@"
+  done
 }
 
 oliver-common-exec() {
