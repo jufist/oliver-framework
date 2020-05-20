@@ -73,31 +73,34 @@ const { document } = (new JSDOM('')).window;
 var $ = jQuery = require('jquery')(window);
 GM.evalvar = (item, y) => {
     let PHASE = {...item};
+    let debug = false;
+    // debug = item.id=='maincontent_variable';
     Object.keys(PHASE).forEach((key) => {
         let iitem = item[key];
         if ($.isPlainObject(iitem)) {
             PHASE[key + 'b64'] = encode.encode(JSON.stringify(iitem), 'base64');
+            PHASE[key + 'param'] = $.param(iitem);
         }
     });
-    
-    // console.error(['DEBUG', item]);
+    debug && console.error(['Orig item', item]);
     let z=JSON.stringify(y).replace(/\\n/g, "cRnN");
     // backslash issue
     z=z.replace(/\\/g, "\\\\");
     z=`z =\`${z}\``;
-    // console.error(['DEBUG1', z, y]);
+    debug && console.error(['Stringify before parsing token', z, y]);
     eval(z);
-    // console.error(['DEBUG2', z]);
+    z=z.replace(/\n/g, "cRnN");
+    debug && console.error(['After parsing token', z]);
     z=`z = ${z}`;
     z = z.replace(/cRnN/g, '" + \'\\n\' + "');
-    // console.error(['DEBUG2A', z]);
+    debug && console.error(['Before convert object string to object', z]);
     eval(z);
-    // console.error(['DEBUG3', z]);
+    debug && console.error(['After convert', z]);
     // convert cRnN
     // Object.keys(z).forEach((k) => {
-    // z[k] = $.type(z[k]) !== 'string' ? z[k] : z[k].replace(/cRnN/g, "\n");
+        // z[k] = $.type(z[k]) !== 'string' ? z[k] : z[k].replace(/cRnN/g, "\n");
     //});
-    // console.log(['DEBUG4', z]);
+    // debug && console.log(['DEBUG4', z]);
     return z;
 };
 global.sprintf = require('sprintf-js').sprintf;
