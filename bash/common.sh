@@ -428,6 +428,20 @@ insert_after_token() {
     esac
 }
 
+# replace_at_token "content" "token" "piecetoreplace"
+replace_at_token() {
+    local token=$2
+    local toadd=$3
+    local seddable=$(echo "$toadd" | sed '$!s/$/\\/')
+    local tkseddable=$(echo "$token" | sed '$!s/$/\\/' | sed 's/\//\\\//g')
+    case $token in
+        *)
+            local out=$(echo "$1" | sed 's/^.*'$tkseddable'.*$/myspecialratk/g')
+            echo "$out" | sed -e "/myspecialratk/a $seddable" | grep -v "myspecialratk"
+            ;;          
+    esac
+}
+
 # replace_after_token "content" "token" "replacetoken" "piecetoadd"
 replace_after_token() {
     local newout=$(echo "$1" | grep -v -F "$3")
