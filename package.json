@@ -34,5 +34,5 @@
     "oliver-framework": "./oliver-framework",
     "oliver-stack": "./scripts/oliver-stack"    
   },
-  "version": "1.0.47"
+  "version": "1.0.48"
 }
