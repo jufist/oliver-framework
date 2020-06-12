@@ -15,6 +15,31 @@ function addQuote() {
   echo "$C"
 }
 
+seddable() {
+    echo "$1" | sed '$!s/$/\\/' | sed 's/\//\\\//g' | sed "s/\&/\\\&/g"
+}
+
+addSingleQuote() {
+    echo "$1" | sed 's/\\/\\\\/g'
+}
+
+replace_vianode() {
+	local content search replace
+        content=$(</dev/stdin)
+	search=$(addSingleQuote "$1")
+	replace=$2
+	echo "$content" | node -e "
+	search=process.argv[1];
+	replace=process.argv[2];
+	process.stderr.write(search);
+	console.error([search, replace]);
+        let content=require('fs').readFileSync(0, 'utf-8');
+            let re = new RegExp(search, 'g');
+            content = content.replace(re, replace);
+	    process.stdout.write(content);
+    " "$search" "$replace"
+}
+
 # remove specified host from /etc/hosts
 function removehost() {
     if [[ "$1" ]]
