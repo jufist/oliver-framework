@@ -31,8 +31,8 @@ replace_vianode() {
 	echo "$content" | node -e "
 	search=process.argv[1];
 	replace=process.argv[2];
-	process.stderr.write(search);
-	console.error([search, replace]);
+	// process.stderr.write(search);
+	// console.error([search, replace]);
         let content=require('fs').readFileSync(0, 'utf-8');
             let re = new RegExp(search, 'g');
             content = content.replace(re, replace);
