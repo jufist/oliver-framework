@@ -491,7 +491,7 @@ switchenv() {
 
 loadenv() {
     [ -f ./.env.all ] && . ./.env.all
-    [[ "${namespace}" == "" ]] && [ -f ./.env ] && . ./.env
+    [[ "${namespace}" == "" || ! -f ./.env.${namespace} ]] && [ -f ./.env ] && . ./.env
     [ -f ./.env.${namespace} ] && . ./.env.${namespace}  
 }
 
