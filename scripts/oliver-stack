@@ -50,7 +50,10 @@ exec--snapshot() {
   local IMAGE=$1
   local CONTAINERNAME=$2
   docker save $IMAGE > /tmp/$CONTAINERNAME.image.tar
-  docker export $CONTAINERNAME > /tmp/$CONTAINERNAME.export.tar
+  docker export $CONTAINERNAME > /tmp/$CONTAINERNAME.export.tar  
+  echo "Snap shot is stored to"
+  echo "Image $IMAGE: /tmp/$CONTAINERNAME.image.tar"
+  echo "Container $CONTAINERNAME: /tmp/$CONTAINERNAME.export.tar"
 }
 
 exec--snapshot-restore() {
