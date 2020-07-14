@@ -426,7 +426,7 @@ ech() {
         out=$(echo "$out" | tail -c 300)"..."
     fi
 
-    echo "$out" >&2
+    [ "$QUIET" == "" ] && echo "$out" >&2
 }
 
 # insert_after_token "content" "token" "piecetoadd"
