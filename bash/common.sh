@@ -273,11 +273,11 @@ exechelplist() {
   for i in "${funcs[@]}"
   do
       local cmd2="$cmd $i"
+      echo "------------"
+      echo "$cmd2"
       i="vars_parse$i"
       ! fn_exists $i && continue
       local def=$(type $i)
-      echo "------------"
-      echo "$cmd2"
       echo ""
       echo "$def" | grep -F "\$" | grep -v -F "\$@"
   done
