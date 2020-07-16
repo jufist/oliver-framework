@@ -495,6 +495,22 @@ loadenv() {
     [ -f ./.env.${namespace} ] && . ./.env.${namespace}  
 }
 
+pids_list_descendants ()
+{
+    local children=$(ps -o pid= --ppid "$1")
+
+    for pid in $children
+    do
+        pids_list_descendants "$pid"
+    done
+
+    echo "$children"
+}
+
+pids_kill() {
+    kill $(pids_list_descendants $1)
+}
+
 alias rsync="rsync -ravzpt"
 alias rsyncroot='rsync --rsync-path="sudo rsync"'
 alias rsyncputty="pscp -v -load"
