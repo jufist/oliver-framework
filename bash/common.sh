@@ -434,6 +434,18 @@ ech() {
 # use $$: end of content
 # Be careful of $$. Use singlequote for '$$'
 insert_after_token() {
+    # local args=$(addQuote "$@")
+    insert_token_help "a" "$@"
+}
+
+insert_before_token() {
+    # local args=$(addQuote "$@")
+    insert_token_help "i" "$@"
+}
+
+insert_token_help() {
+    local method=$1
+    shift
     local token=$2
     local toadd=$3
     local seddable=$(echo "$toadd" | sed '$!s/$/\\/')
@@ -448,7 +460,7 @@ insert_after_token() {
       echo "$toadd"
       ;;
     *)
-      echo "$1" | sed -e "/$tkseddable/a $seddable"
+      echo "$1" | sed -e "/$tkseddable/${method} $seddable"
       ;;          
     esac
 }
