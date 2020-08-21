@@ -56,6 +56,23 @@ MYHOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 oliver-common-exec --check-existed '$M0 $M1' "$@"
 
 ```
+## Some more user cases
+```bash
+vars_parse--main() {
+    definedargs=("v|version")
+    inputargs=("$@")
+    myargs inputargs definedargs
+    set -- "${newargs[@]}"
+
+    RESTARGS="$@"
+    [[ "$MA_version" == "" ]] && echo "Please choose version" && exit 
+}
+
+exec--main() {
+    echo "Main"
+    exit
+}
+```
 
 # Using Docker Oliver Stack
 `. node_modules/oliver-framework/bash/oliverstack.sh`
