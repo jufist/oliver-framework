@@ -292,7 +292,7 @@ oliver-common-exec() {
     preventExist "$arg" "$@"
   fi
   action="$1"
-  if [[ $action =~ "--" ]]; then
+  if [[ $action =~ "--" ]] && fn_exists "exec$action" ; then
     shift
   else
     action="--main"
