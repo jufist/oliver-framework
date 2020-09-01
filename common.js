@@ -65,13 +65,21 @@ catch (e) {
 config = config || {};
 
 config.basedir = appRoot + '';
-var jsdom = require('jsdom');
-const { JSDOM } = jsdom;
-const { window } = new JSDOM();
-const { document } = (new JSDOM('')).window;
-// global.document = document;
-var $ = require('jquery')(window);
+let _loadedjQuery = false;
+let loadjQuery = () => {
+    if (_loadedjQuery) return;
+    _loadedjQuery = true;
+
+    let jsdom = require('jsdom');
+    const { JSDOM } = jsdom;
+    const { window } = new JSDOM();
+    const { document } = (new JSDOM('')).window;
+    // global.document = document;
+    global.$ = require('jquery')(window);
+}
+
 GM.evalvar = (item, y) => {
+    loadjQuery();
     let PHASE = {...item};
     let debug = false;
     // debug = item.id=='maincontent_variable';
