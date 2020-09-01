@@ -314,6 +314,7 @@ execIET() {
     local callback=$2
     local command=$3
     local user=$4
+    local dry_run=$5    
     if [[ "$user" == "" ]]; then
         command="ssh $item '$command'"
     else
@@ -324,10 +325,12 @@ execIET() {
 
     if [[ "$callback" != "" ]] ; then
         ech "log" "[Exec] $command"
-        eval $command
+        [[ "$dry_run" == "" ]] && eval $command
+        [[ "$dry_run" != "" ]] && echo $command
     else
         ech "log" "[SSH] SSH to $item"
-        ssh $item
+        [[ "$dry_run" == "" ]] && ssh $item
+	[[ "$dry_run" != "" ]] && echo "ssh $item"
     fi
 }
 
@@ -337,6 +340,8 @@ execIETdocker() {
     local callback=$2
     local command=$3
     local user=$4
+    local dry_run=$5
+    
     if [[ "$user" == "" ]]; then
         command="docker exec -i $item /bin/bash -c '$command'"
     else
@@ -347,10 +352,12 @@ execIETdocker() {
 
     if [[ "$callback" != "" ]] ; then
         ech "log" "[exec] $command"
-        eval $command
+        [[ "$dry_run" == "" ]] && eval $command
+        [[ "$dry_run" != "" ]] && echo $command
     else
         ech "log" "[docker] Docker to $item"
-        docker exec -ti $item /bin/bash
+        [[ "$dry_run" == "" ]] && docker exec -ti $item /bin/bash
+        [[ "$dry_run" != "" ]] && echo "docker exec -ti $item /bin/bash" 
     fi
 }
 
@@ -363,6 +370,8 @@ execInEachType () {
     local command=""
     local MA_number=$3
     local user=$4
+    local dry_run=$5
+
     if [[ "$MA_number" != "" ]] ; then
         typevar=(${typevar[$MA_number]})
     fi
@@ -373,7 +382,7 @@ execInEachType () {
         NODETYPE=$(echo "$item::" | cut -d ":" -f 2)
         item=$(echo "$item::" | cut -d ":" -f 1)
         command="${callback//NODE/$item}"
-        execIET$NODETYPE "$item" "$callback" "$command" "$user"
+        execIET$NODETYPE "$item" "$callback" "$command" "$user" "$dry_run"	
     done
 }
 
