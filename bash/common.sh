@@ -405,7 +405,7 @@ basheval() {
 
 ech() {
     local type=$1
-    if [[ 'log debug notice error alert warn' =~ "$type" ]]; then
+    if [[ "$2" != "" ]]; then
         shift
     else
         type="debug"
@@ -418,16 +418,16 @@ ech() {
         short="head"
     fi
 
-    if [[ "$DEBUG" == "" && "$type" == "debug" ]]; then
-        return
-    fi
+    #if [[ "$DEBUG" == "" && "$type" == "debug" ]]; then
+    #    return
+   # fi
 
 #    if [[ "$type" == "error" ]]; then
  #       echo "[${type}] $@" >&2
   #      return 
    # fi
 
-    local out="[${type}] $@"
+    local out="$@"
     if [[ "$short" == "head" ]]; then
         out=$(echo "$out" | head -c 300)"..."
     fi
@@ -435,7 +435,7 @@ ech() {
         out=$(echo "$out" | tail -c 300)"..."
     fi
 
-    [ "$QUIET" == "" ] && echo "$out" >&2
+    [ "$QUIET" == "" ] && echo "$out" | node -e "let out=require('fs').readFileSync(0, 'utf-8'); var debug = require('debug')('ech:$type'); debug(out.trim());" >&2
 }
 
 # insert_after_token "content" "token" "piecetoadd"
