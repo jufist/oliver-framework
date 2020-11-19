@@ -314,12 +314,13 @@ execIET() {
   local command=$3
   local user=$4
   local dry_run=$5
+  local shellarg=$6
   if [[ "$user" == "" ]]; then
-    command="ssh $item '$command'"
+    command="ssh $shellarg $item '$command'"
   else
     # Allow other users to run, not just root
     # "sudo -s su kazoo -c '
-    command="ssh $item 'sudo $command'"
+    command="ssh $shellarg $item 'sudo $command'"
   fi
 
   if [[ "$callback" != "" ]]; then
@@ -328,7 +329,7 @@ execIET() {
     [[ "$dry_run" != "" ]] && echo $command
   else
     ech "log" "[SSH] SSH to $item"
-    [[ "$dry_run" == "" ]] && ssh $item
+    [[ "$dry_run" == "" ]] && ssh $shellarg $item
     [[ "$dry_run" != "" ]] && echo "ssh $item"
   fi
 }
@@ -339,13 +340,14 @@ execIETdocker() {
   local command=$3
   local user=$4
   local dry_run=$5
+  local shellarg=$6
 
   if [[ "$user" == "" ]]; then
-    command="docker exec -i $item /bin/bash -c '$command'"
+    command="docker exec -i $shellarg $item /bin/bash -c '$command'"
   else
     # Allow other users to run, not just root
     # "sudo -s su kazoo -c '
-    command="docker exec -i -u root $item /bin/bash -c '$command'"
+    command="docker exec -i -u root $shellarg $item /bin/bash -c '$command'"
   fi
 
   if [[ "$callback" != "" ]]; then
@@ -354,7 +356,7 @@ execIETdocker() {
     [[ "$dry_run" != "" ]] && echo $command
   else
     ech "log" "[docker] Docker to $item"
-    [[ "$dry_run" == "" ]] && docker exec -ti $item /bin/bash
+    [[ "$dry_run" == "" ]] && docker exec -ti $shellarg $item /bin/bash
     [[ "$dry_run" != "" ]] && echo "docker exec -ti $item /bin/bash"
   fi
 }
@@ -368,7 +370,8 @@ execInEachType() {
   local command=""
   local MA_number=$3
   local user=$4
-  local dry_run=$5
+  local dry_run=$5  
+  local shellarg=$6
 
   if [[ "$MA_number" != "" ]]; then
     typevar=(${typevar[$MA_number]})
@@ -379,7 +382,7 @@ execInEachType() {
     NODETYPE=$(echo "$item::" | cut -d ":" -f 2)
     item=$(echo "$item::" | cut -d ":" -f 1)
     command="${callback//NODE/$item}"
-    execIET$NODETYPE "$item" "$callback" "$command" "$user" "$dry_run"
+    execIET$NODETYPE "$item" "$callback" "$command" "$user" "$dry_run" "$shellarg" 
   done
 }
 
