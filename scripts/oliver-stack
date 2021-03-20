@@ -14,6 +14,11 @@ exec--help() {
   echo "oliver-stack --mount CONTAINERNAME HOSTPATH CONTAINERPATH"
 }
 
+exec--ip() {
+  CONTAINER=$1
+  docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $CONTAINER
+}
+
 exec--mount() {
   set -e
   CONTAINER=$1
