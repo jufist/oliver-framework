@@ -274,6 +274,15 @@ exechelplist() {
   done
 }
 
+base64fix() {
+  if [[ "$1" == "--base64" ]]; then
+    local s=$(echo $2 | base64 -d | jq -r '. | join(" ")')
+    echo "$s"
+    return 0
+  fi
+  return 1
+}
+
 oliver-common-exec() {
   SETUPDIR=$(dirname $(realpath "$0"))
   if [[ "$1" == "--check-existed" ]]; then
@@ -282,6 +291,16 @@ oliver-common-exec() {
     shift
     preventExist "$arg" "$@"
   fi
+
+  local x
+  local s
+  s=$(base64fix "$@")
+  local sr=$?
+  eval "x=( $s )"
+  if [[ "${sr}" == "0" ]]; then
+    set -- "${x[@]}"
+  fi
+
   action="$1"
   local fullaction="exec$action"
   if [[ $action =~ "--" ]] && fn_exists "exec$action"; then

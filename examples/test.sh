@@ -1,7 +1,7 @@
 #!/bin/bash
 
 exec--test() {
-  echo "Testing calls"
+  echo "Testing calls $@"
 }
 
 exec--main() {
