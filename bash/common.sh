@@ -288,6 +288,14 @@ base64fix() {
   return 1
 }
 
+evalable() {
+  local s
+  s=$@
+  s="${s//\`/\\\`}"
+  s="${s//\$/\\\$}"
+  echo "${s[@]}"
+}
+
 oliver-common-exec() {
   SETUPDIR=$(dirname $(realpath "$0"))
   if [[ "$1" == "--check-existed" ]]; then
@@ -303,9 +311,7 @@ oliver-common-exec() {
   local sr
   sr=$?
 
-  s="${s//\`/\\\`}"
-  s="${s//\$/\\\$}"
-  eval "x=( $s )"
+  eval "x=( $(evalable "$s") )"
   if [[ "${sr}" == "0" ]]; then
     set -- "${x[@]}"
   fi
