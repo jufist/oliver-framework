@@ -274,10 +274,15 @@ exechelplist() {
   done
 }
 
+urldecode() { : "${*//+/ }"; echo -e -n "${_//%/\\x}"; }
+
 base64fix() {
   if [[ "$1" == "--base64" ]]; then
-    local s=$(echo $2 | base64 -d | jq -r '. | join(" ")')
-    echo "$s"
+    local s
+    s=$(echo $2 | base64 -d | jq -r '.[] | "urldecode \"\(.)\"; echo -n \" \" "')
+    eval "$s"
+    # echo "$s" >&2
+    # exit 1
     return 0
   fi
   return 1
@@ -295,7 +300,11 @@ oliver-common-exec() {
   local x
   local s
   s=$(base64fix "$@")
-  local sr=$?
+  local sr
+  sr=$?
+
+  s="${s//\`/\\\`}"
+  s="${s//\$/\\\$}"
   eval "x=( $s )"
   if [[ "${sr}" == "0" ]]; then
     set -- "${x[@]}"
