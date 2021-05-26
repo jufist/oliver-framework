@@ -307,10 +307,9 @@ oliver-common-exec() {
 
   local x
   local s
-  s=$(base64fix "$@")
   local sr
+  s=$(base64fix "$@")
   sr=$?
-
   eval "x=( $(evalable "$s") )"
   if [[ "${sr}" == "0" ]]; then
     set -- "${x[@]}"
