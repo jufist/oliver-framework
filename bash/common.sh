@@ -279,10 +279,15 @@ urldecode() { : "${*//+/ }"; echo -e -n "${_//%/\\x}"; }
 base64fix() {
   if [[ "$1" == "--base64" ]]; then
     local s
-    s=$(echo $2 | base64 -d | jq -r '.[] | "urldecode \"\(.)\"; echo -n \" \" "')
-    eval "$s"
+    s=$(echo $2 | base64 -d | jq -r '.[] | "echo -e \"$(urldecode \"\(.)\")\" ; echo -n \" \" "')
+    s="${s//\!/\\\!}"
+
+    # Debug
+    # echo "Extracted arguments:" >&2
     # echo "$s" >&2
-    # exit 1
+    # eval "$s" | sed 's/\\\!/\!/g' >&2
+
+    eval "$s" | sed 's/\\\!/\!/g'
     return 0
   fi
   return 1
@@ -293,6 +298,7 @@ evalable() {
   s=$@
   s="${s//\`/\\\`}"
   s="${s//\$/\\\$}"
+  s="${s//\!/\\\!}"
   echo "${s[@]}"
 }
 
@@ -310,7 +316,17 @@ oliver-common-exec() {
   local sr
   s=$(base64fix "$@")
   sr=$?
-  eval "x=( $(evalable "$s") )"
+  eval "x=( $(evalable "$s" | sed 's/\\\!/\!/g') )"
+
+  # Debug
+  # echo "$s">&2
+  # echo "0:">&2
+  # echo "${x[0]}">&2
+  # echo "2:">&2
+  # echo "${x[2]}">&2
+  # echo "All:">&2
+  # echo "${x[@]}">&2
+  # exit 1
   if [[ "${sr}" == "0" ]]; then
     set -- "${x[@]}"
   fi
