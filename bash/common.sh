@@ -591,6 +591,6 @@ pids_kill() {
 alias rsync="rsync -ravzpt"
 alias rsyncroot='rsync --rsync-path="sudo rsync"'
 alias rsyncputty="pscp -v -load"
-
+CTLWORKINGDIR="${PWD}"
 OLIVERDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && cd ../ >/dev/null && pwd)"
 # PATH="$PATH:$OLIVERDIR/scripts"
