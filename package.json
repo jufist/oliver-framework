@@ -2,6 +2,11 @@
   "author": {
     "name": "Oliver Huynh"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run prettier-format && git add . --dry-run"
+    }
+  },
   "dependencies": {
     "app-root-path": "^2.2.1",
     "commander": "^4.0.1",
@@ -27,8 +32,15 @@
     "type": "git",
     "url": "ssh://git@github.com/antbuddy-share/oliver-framework.git"
   },
+  "devDependencies": {
+    "husky": "^4.2.3",
+    "prettier": "^2.3.1",
+    "prettier-plugin-sh": "^0.6.1",
+    "run-script-os": "^1.1.1"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prettier-format": "prettier --write --config .prettierrc 'bash/common.sh'"
   },
   "bin": {
     "oliver-framework": "./oliver-framework",

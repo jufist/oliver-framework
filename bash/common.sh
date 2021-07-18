@@ -274,7 +274,10 @@ exechelplist() {
   done
 }
 
-urldecode() { : "${*//+/ }"; echo -e -n "${_//%/\\x}"; }
+urldecode() {
+  : "${*//+/ }"
+  echo -e -n "${_//%/\\x}"
+}
 
 base64fix() {
   if [[ "$1" == "--base64" ]]; then
@@ -346,6 +349,7 @@ oliver-common-exec() {
     fullaction="exec$action"
   fi
 
+  local cd
   parseaction="vars_parse$action"
   fn_exists $parseaction && $parseaction "$@"
 
@@ -419,19 +423,20 @@ execInEachType() {
   local command=""
   local MA_number=$3
   local user=$4
-  local dry_run=$5  
+  local dry_run=$5
   local shellarg=$6
 
   if [[ "$MA_number" != "" ]]; then
     typevar=(${typevar[$MA_number]})
   fi
   local NODETYPE
+  [[ "${typevar[@]}" == "" ]] && ech "error" "$type is not available" && return 1
   for item in "${typevar[@]}"; do
 
     NODETYPE=$(echo "$item::" | cut -d ":" -f 2)
     item=$(echo "$item::" | cut -d ":" -f 1)
     command="${callback//NODE/$item}"
-    execIET$NODETYPE "$item" "$callback" "$command" "$user" "$dry_run" "$shellarg" 
+    execIET$NODETYPE "$item" "$callback" "$command" "$user" "$dry_run" "$shellarg"
   done
 }
 
