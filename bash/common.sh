@@ -396,17 +396,17 @@ execIETdocker() {
   local shellarg=$6
   local dcommand
 
-      if [[ "$user" == "" ]]; then
-	[ "$command" == "" ] && dcommand="docker exec -i $item /bin/bash"
-	[ "$command" != "" ] && dcommand="docker exec -i $item /bin/bash -c '$command'"
-	command="${dcommand}"
-    else
-        # Allow other users to run, not just root
-        # "sudo -s su kazoo -c '
-        [ "$command" == "" ] && dcommand="docker exec -i -u root $item /bin/bash"
-        [ "$command" != "" ] && dcommand="docker exec -i -u root $item /bin/bash -c '$command'"
-	command="${dcommand}"
-    fi
+  if [[ "$user" == "" ]]; then
+    [ "$command" == "" ] && dcommand="docker exec -i $item /bin/bash"
+    [ "$command" != "" ] && dcommand="docker exec -i $item /bin/bash -c '$command'"
+    command="${dcommand}"
+  else
+    # Allow other users to run, not just root
+    # "sudo -s su kazoo -c '
+    [ "$command" == "" ] && dcommand="docker exec -i -u root $item /bin/bash"
+    [ "$command" != "" ] && dcommand="docker exec -i -u root $item /bin/bash -c '$command'"
+    command="${dcommand}"
+  fi
 
   if [[ "$callback" != "" ]]; then
     ech "log" "[exec] $command"
