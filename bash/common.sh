@@ -379,11 +379,11 @@ execIET() {
   if [[ "$callback" != "" ]]; then
     ech "log" "[Exec] $command"
     [[ "$dry_run" == "" ]] && eval $command
-    [[ "$dry_run" != "" ]] && echo $command
+    [[ "$dry_run" != "" ]] && ech log $command
   else
     ech "log" "[SSH] SSH to $item"
     [[ "$dry_run" == "" ]] && ssh $shellarg $item
-    [[ "$dry_run" != "" ]] && echo "ssh $item"
+    [[ "$dry_run" != "" ]] && ech "log" "ssh $shellarg $item"
   fi
 }
 
