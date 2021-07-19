@@ -369,6 +369,7 @@ execIET() {
   local dry_run=$5
   local shellarg=$6
   local localenv=$7
+  [[ "$command" == "" ]] && command="/bin/bash"
   if [[ "$user" == "" ]]; then
     command="ssh $shellarg $item '${localenv}$command'"
   else
@@ -377,15 +378,9 @@ execIET() {
     command="ssh $shellarg $item 'sudo ${localenv}${command}'"
   fi
 
-  if [[ "$callback" != "" ]]; then
-    ech "log" "[Exec] $command"
-    [[ "$dry_run" == "" ]] && eval $command
-    [[ "$dry_run" != "" ]] && ech log $command
-  else
-    ech "log" "[SSH] SSH to $item"
-    [[ "$dry_run" == "" ]] && ssh $shellarg $item
-    [[ "$dry_run" != "" ]] && ech "log" "ssh $shellarg $item"
-  fi
+  ech "log" "[Exec] $command"
+  [[ "$dry_run" == "" ]] && eval $command
+  [[ "$dry_run" != "" ]] && ech log $command
 }
 
 execIETdocker() {
