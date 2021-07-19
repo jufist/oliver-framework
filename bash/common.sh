@@ -368,12 +368,13 @@ execIET() {
   local user=$4
   local dry_run=$5
   local shellarg=$6
+  local localenv=$7
   if [[ "$user" == "" ]]; then
-    command="ssh $shellarg $item '$command'"
+    command="ssh $shellarg $item '${localenv}$command'"
   else
     # Allow other users to run, not just root
     # "sudo -s su kazoo -c '
-    command="ssh $shellarg $item 'sudo $command'"
+    command="ssh $shellarg $item 'sudo ${localenv}${command}'"
   fi
 
   if [[ "$callback" != "" ]]; then
@@ -394,17 +395,18 @@ execIETdocker() {
   local user=$4
   local dry_run=$5
   local shellarg=$6
+  local localenv=$7
   local dcommand
 
   if [[ "$user" == "" ]]; then
     [ "$command" == "" ] && dcommand="docker exec -i $item /bin/bash"
-    [ "$command" != "" ] && dcommand="docker exec -i $item /bin/bash -c '$command'"
+    [ "$command" != "" ] && dcommand="docker exec -i $item /bin/bash -c '${localenv}$command'"
     command="${dcommand}"
   else
     # Allow other users to run, not just root
     # "sudo -s su kazoo -c '
     [ "$command" == "" ] && dcommand="docker exec -i -u root $item /bin/bash"
-    [ "$command" != "" ] && dcommand="docker exec -i -u root $item /bin/bash -c '$command'"
+    [ "$command" != "" ] && dcommand="docker exec -i -u root $item /bin/bash -c '${localenv}$command'"
     command="${dcommand}"
   fi
 
@@ -430,6 +432,7 @@ execInEachType() {
   local user=$4
   local dry_run=$5
   local shellarg=$6
+  local localenv=$7
 
   if [[ "$MA_number" != "" ]]; then
     typevar=(${typevar[$MA_number]})
@@ -441,7 +444,7 @@ execInEachType() {
     NODETYPE=$(echo "$item::" | cut -d ":" -f 2)
     item=$(echo "$item::" | cut -d ":" -f 1)
     command="${callback//NODE/$item}"
-    execIET$NODETYPE "$item" "$callback" "$command" "$user" "$dry_run" "$shellarg"
+    execIET$NODETYPE "$item" "$callback" "$command" "$user" "$dry_run" "$shellarg" "$localenv"
   done
 }
 
