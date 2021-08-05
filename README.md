@@ -59,7 +59,7 @@ oliver-common-exec --check-existed '$M0 $M1' "$@"
 ## Some more user cases
 ```bash
 vars_parse--main() {
-    definedargs=("v|version")
+    definedargs=("v|version" "e|extra")
     inputargs=("$@")
     myargs inputargs definedargs
     set -- "${newargs[@]}"
