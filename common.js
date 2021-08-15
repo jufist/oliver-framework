@@ -261,8 +261,8 @@ global.clexec = function(cmd, withcmd, outcallback, rejcallback, args, options) 
   });
 };
 
-GM.exec = function(cmd, args, options) {
-  return clexec(cmd, 1, function(out, resolve) {resolve(out);}, function(out, resolve) {resolve(out);}, args, options);
+GM.exec = function(cmd, args, options, res = false, rej = false) {
+  return clexec(cmd, 1, res || function(out, resolve) {resolve(out);}, rej || function(out, resolve) {resolve(out);}, args, options);
 }
 
 // clexecthen func
