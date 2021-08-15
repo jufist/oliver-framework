@@ -7,7 +7,7 @@ exec--test() {
 exec--main() {
   echo "Arguments: ${@}"
   echo "End"
-  local cmd=`basename $0`
+  local cmd=$(basename $0)
   declare -F | grep exec-- | sed 's/declare -f exec/'$cmd' /'
   echo $OLIVERDIR
 }

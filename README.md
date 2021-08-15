@@ -1,9 +1,12 @@
 # Oliver Framework
+
 ## Setup
-- lib: 
-    - Alpine: apk add --virtual build_deps gettext
-    - Debian: apt intall gettext
+
+- lib:
+  - Alpine: apk add --virtual build_deps gettext
+  - Debian: apt intall gettext
 - package.json
+
 ```
   "dependencies": {
     "oliver-framework": "git@github.com:antbuddy-share/oliver-framework.git"
@@ -17,18 +20,18 @@
 ```bash
 #!/bin/bash
 
-SCRIPT=`readlink -f "$0"`
+SCRIPT=$(readlink -f "$0")
 # No sym
 # SCRIPT=`realpath -s $0`
-SCRIPTPATH=`dirname $SCRIPT`
-WORKINGDIR=`pwd`
+SCRIPTPATH=$(dirname $SCRIPT)
+WORKINGDIR=$(pwd)
 
 exec--test() {
   echo "Testing calls"
 }
 
 exec--main() {
-  local cmd=`basename $0`
+  local cmd=$(basename $0)
   declare -F | grep exec-- | sed 's/declare -f exec/'$cmd' /'
 }
 
@@ -49,34 +52,35 @@ exec--add() {
   echo "$@"
 }
 
-MYHOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-
+MYHOME="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 
 . $MYHOME/node_modules/oliver-framework/bash/common.sh
 oliver-common-exec --check-existed '$M0 $M1' "$@"
-
 ```
+
 ## Some more user cases
+
 ```bash
 vars_parse--main() {
-    definedargs=("v|version" "e|extra")
-    inputargs=("$@")
-    myargs inputargs definedargs
-    set -- "${newargs[@]}"
+  definedargs=("v|version" "e|extra")
+  inputargs=("$@")
+  myargs inputargs definedargs
+  set -- "${newargs[@]}"
 
-    RESTARGS="$@"
-    [[ "$MA_version" == "" ]] && echo "Please choose version" && exit 
+  RESTARGS="$@"
+  [[ "$MA_version" == "" ]] && echo "Please choose version" && exit
 }
 
 exec--main() {
-    echo "Main"
-    exit
+  echo "Main"
+  exit
 }
 ```
 
 # Using Docker Oliver Stack
-`. node_modules/oliver-framework/bash/oliverstack.sh`
-`oliver-stack --help`
+
+`. node_modules/oliver-framework/bash/oliverstack.sh` `oliver-stack --help`
 
 # Variables
+
 OLIVERDIR
