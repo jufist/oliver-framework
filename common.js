@@ -154,48 +154,8 @@ GM.config = config;
 if (config.logFile) {
   GM.log_file = fs.createWriteStream(config.logFile, { flags: 'w' });
 }
-global.cl = function (e) {
-  if (
-    !config.debug &&
-    e &&
-    e.indexOf &&
-    (e.indexOf('[Exec') !== -1 || e.indexOf('[Debug') !== -1)
-  ) {
-    return;
-  }
-  var moment = require('moment');
-  /*
-   ** format time log Ex. [Thu Feb 28 2019 +07:00 14:24:51.757]
-   */
-  var wrapped = moment(new Date()).format('ddd MMM DD YYYY Z HH:mm:ss.SSS');
-  var args = arguments;
-  wrapped = `[${wrapped}]`;
 
-  /*if (config.debug) {
-    var callerFunction = cl.caller.name;
-    wrapped = `${wrapped} [${callerFunction}]`;
-  }*/
-
-  var type = Function.prototype.call.bind(Object.prototype.toString);
-  if (
-    args.length > 1 ||
-    Array.isArray(args[0]) ||
-    type(args[0]) === '[object Object]'
-  ) {
-    if (GM.log_file) {
-      GM.log_file.write(util.format(wrapped) + '\n');
-      GM.log_file.write(util.format(args) + '\n');
-    }
-    console.log(wrapped);
-    console.log.apply(this, args);
-  } else {
-    args[0] = wrapped + ' ' + args[0];
-    if (GM.log_file) {
-      GM.log_file.write(util.format(args) + '\n');
-    }
-    console.log.apply(this, args);
-  }
-};
+global.cl = require('debug')('oliver-framework');
 
 // Common
 global.clexec = function (

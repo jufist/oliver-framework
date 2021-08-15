@@ -4,24 +4,30 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run prettier-format && git add . --dry-run"
+      "pre-commit": "prototype --prettier && git add . --dry-run"
     }
   },
   "dependencies": {
     "app-root-path": "^2.2.1",
     "commander": "^4.0.1",
+    "debug": "^4.3.2",
     "easy-promise-queue": "^0.5.4",
     "extend": "^3.0.2",
+    "jquery": "^3.4.1",
+    "jsdom": "^16.2.2",
     "minimist": "^1.2.0",
     "moment": "^2.24.0",
     "nodeproxy": "^1.0.0",
     "promise-foreach": "^1.0.23",
-    "jquery": "^3.4.1",
-    "jsdom": "^16.2.2",   
     "sprintf-js": "^1.1.2"
   },
   "description": "Sharing common functions/features and tools",
-  "devDependencies": {},
+  "devDependencies": {
+    "husky": "^4.2.3",
+    "prettier": "^2.3.1",
+    "prettier-plugin-sh": "^0.6.1",
+    "run-script-os": "^1.1.1"
+  },
   "license": "ISC",
   "main": "common.js",
   "name": "oliver-framework",
@@ -32,19 +38,13 @@
     "type": "git",
     "url": "ssh://git@github.com/antbuddy-share/oliver-framework.git"
   },
-  "devDependencies": {
-    "husky": "^4.2.3",
-    "prettier": "^2.3.1",
-    "prettier-plugin-sh": "^0.6.1",
-    "run-script-os": "^1.1.1"
-  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prettier-format": "prettier --write --config .prettierrc 'bash/common.sh'"
   },
   "bin": {
     "oliver-framework": "./oliver-framework",
-    "oliver-stack": "./scripts/oliver-stack"    
+    "oliver-stack": "./scripts/oliver-stack"
   },
   "version": "1.0.65"
 }
