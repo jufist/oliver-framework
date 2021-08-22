@@ -1,5 +1,7 @@
 #!/bin/bash
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+. ${SCRIPT_DIR}/auto.sh
 function jsonmerge() {
   jq -s 'def deepmerge(a;b):
   reduce b[] as $item (a;
@@ -393,14 +395,26 @@ execIET() {
   local dry_run=$5
   local shellarg=$6
   local localenv=$7
+  local simulate=$8
   [[ "$command" == "" ]] && command="/bin/bash"
-  if [[ "$user" == "" ]]; then
-    command="ssh $shellarg $item '${localenv}$command'"
-  else
-    # Allow other users to run, not just root
-    # "sudo -s su kazoo -c '
-    command="ssh $shellarg $item 'sudo ${localenv}${command}'"
-  fi
+
+  [[ "$simulate" != "" ]] && {
+    genKey --init --raw "String ssh $shellarg $item"
+    genKey Return
+    genKey --raw Delay 3
+    genKey --raw "String ${localenv}$command"
+    genKey Return
+    command="playKey --nohup"
+  }
+  [[ "$simulate" == "" ]] && {
+    if [[ "$user" == "" ]]; then
+      command="ssh $shellarg $item '${localenv}$command'"
+    else
+      # Allow other users to run, not just root
+      # "sudo -s su kazoo -c '
+      command="ssh $shellarg $item 'sudo ${localenv}${command}'"
+    fi
+  }
 
   ech "log" "[Exec] $command"
   [[ "$dry_run" == "" ]] && eval $command
@@ -452,6 +466,7 @@ execInEachType() {
   local dry_run=$5
   local shellarg=$6
   local localenv=$7
+  local simulate=$8
 
   if [[ "$MA_number" != "" ]]; then
     typevar=(${typevar[$MA_number]})
@@ -463,7 +478,7 @@ execInEachType() {
     NODETYPE=$(echo "$item::" | cut -d ":" -f 2)
     item=$(echo "$item::" | cut -d ":" -f 1)
     command="${callback//NODE/$item}"
-    execIET$NODETYPE "$item" "$callback" "$command" "$user" "$dry_run" "$shellarg" "$localenv"
+    execIET$NODETYPE "$item" "$callback" "$command" "$user" "$dry_run" "$shellarg" "$localenv" "$simulate"
   done
 }
 

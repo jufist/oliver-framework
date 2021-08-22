@@ -17,7 +17,8 @@ ech2() {
 }
 
 playKey() {
-  xmacroplay $DISPLAY <${WORKINGDIR}/tmp/genKey >/dev/null
+  [ "$1" == "--nohup" ] && nohup xmacroplay $DISPLAY <${WORKINGDIR}/tmp/genKey >/dev/null &
+  [ "$1" != "--nohup" ] && xmacroplay $DISPLAY <${WORKINGDIR}/tmp/genKey >/dev/null
 }
 
 keyecho() {
