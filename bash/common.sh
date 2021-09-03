@@ -412,7 +412,7 @@ execIET() {
     else
       # Allow other users to run, not just root
       # "sudo -s su kazoo -c '
-      command="ssh $shellarg $item 'sudo ${localenv}${command}'"
+      command="ssh $shellarg $item 'sudo -s su $user -c \"${localenv}${command}\"'"
     fi
   }
 
@@ -430,28 +430,29 @@ execIETdocker() {
   local shellarg=$6
   local localenv=$7
   local dcommand
+  local arg
+  arg="-i"
 
+  if [[ "$callback" == "" ]]; then
+    ech "log" "[docker] Docker to $item"
+    arg="-ti"
+  fi
+  ech "log" "[exec] $command $localenv"
   if [[ "$user" == "" ]]; then
-    [ "$command" == "" ] && dcommand="docker exec -i $item /bin/bash"
-    [ "$command" != "" ] && dcommand="docker exec -i $item /bin/bash -c '${localenv}$command'"
+    [ "$command" == "" ] && dcommand="docker exec $arg $shellarg $item /bin/bash -c '${localenv}\$SHELL'"
+    [ "$command" != "" ] && dcommand="docker exec $arg $shellarg $item /bin/bash -c '${localenv}$command'"
     command="${dcommand}"
   else
     # Allow other users to run, not just root
     # "sudo -s su kazoo -c '
-    [ "$command" == "" ] && dcommand="docker exec -i -u root $item /bin/bash"
-    [ "$command" != "" ] && dcommand="docker exec -i -u root $item /bin/bash -c '${localenv}$command'"
+    [ "$command" == "" ] && dcommand="docker exec $arg $shellarg -u root $item /bin/bash -c '${localenv}\$SHELL'"
+    [ "$command" != "" ] && dcommand="docker exec $arg $shellarg -u root $item /bin/bash -c '${localenv}$command'"
     command="${dcommand}"
   fi
 
-  if [[ "$callback" != "" ]]; then
-    ech "log" "[exec] $command"
-    [[ "$dry_run" == "" ]] && eval $command
-    [[ "$dry_run" != "" ]] && echo $command
-  else
-    ech "log" "[docker] Docker to $item"
-    [[ "$dry_run" == "" ]] && docker exec -ti $shellarg $item /bin/bash
-    [[ "$dry_run" != "" ]] && echo "docker exec -ti $item /bin/bash"
-  fi
+
+  [[ "$dry_run" == "" ]] && eval $command
+  [[ "$dry_run" != "" ]] && echo $command
 }
 
 execInEachType() {
@@ -474,7 +475,6 @@ execInEachType() {
   local NODETYPE
   [[ "${typevar[@]}" == "" ]] && ech "error" "$type is not available" && return 1
   for item in "${typevar[@]}"; do
-
     NODETYPE=$(echo "$item::" | cut -d ":" -f 2)
     item=$(echo "$item::" | cut -d ":" -f 1)
     command="${callback//NODE/$item}"
