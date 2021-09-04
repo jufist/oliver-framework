@@ -452,7 +452,8 @@ GM.exportbash = function (v) {
       console.log(`${i}=(`);
       Object.keys(v[i]).forEach((ii) => {
         if (typeof v[i][ii] != 'object') {
-          console.log(`  [${ii}]="${v[i][ii]}"`);
+          const s=JSON.stringify(`${v[i][ii]}`);
+          console.log(`  [${ii}]=${s}`);
         }
       });
       console.log(`)`);

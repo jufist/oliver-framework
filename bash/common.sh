@@ -450,7 +450,6 @@ execIETdocker() {
     command="${dcommand}"
   fi
 
-
   [[ "$dry_run" == "" ]] && eval $command
   [[ "$dry_run" != "" ]] && echo $command
 }
