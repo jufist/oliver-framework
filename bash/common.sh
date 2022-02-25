@@ -206,14 +206,16 @@ myconfirm() {
 # myargs inputargs definedargs
 # set -- "${newargs[@]}"
 myargs() {
-  [ "$(bash --version | grep version | grep -F "4." | grep -vF "4.4" | wc -l)" == "1" ] && {
+  local isV4
+  isV4="$(bash --version | grep version | grep -F "4." | grep -vF "4.4" | wc -l)"
+  [ "$isV4" == "1" ] && {
     echo "Please upgrade bash to 5" >&2
     local arr
     eval "arr=(\${$1[@]})"
     local args
     eval "args=(\${$2[@]})"
   }
-  [ "$(bash --version | grep version | grep -F "4." | wc -l)" == "1" ] || {
+  [ "$isV4" == "1" ] || {
     local -n arr=$1
     local -n args=$2
   }
