@@ -206,7 +206,7 @@ myconfirm() {
 # myargs inputargs definedargs
 # set -- "${newargs[@]}"
 myargs() {
-  [ "$(bash --version | grep version | grep -F "4." | wc -l)" == "1" ] && {
+  [ "$(bash --version | grep version | grep -F "4." | grep -vF "4.4" | wc -l)" == "1" ] && {
     echo "Please upgrade bash to 5" >&2
     local arr
     eval "arr=(\${$1[@]})"
@@ -529,6 +529,7 @@ ech() {
   if [[ "$short" == "tail" ]]; then
     out=$(echo "$out" | tail -c 300)"..."
   fi
+  export DEBUG="${DEBUG}"
 
   [ "$QUIET" == "" ] && [ "$DEBUG" != "" ] && [ "$DEBUGUSEBASH" != "" ] && (
     cd ${OLIVERDIR}

@@ -453,7 +453,7 @@ GM.exportbash = function (v) {
       Object.keys(v[i]).forEach((ii) => {
         if (typeof v[i][ii] != 'object') {
           // Allow \n to render normally in bash
-          const s=JSON.stringify(`${v[i][ii]}`).replaceAll("\\n", "\n");
+          const s = JSON.stringify(`${v[i][ii]}`).replaceAll('\\n', '\n');
           console.log(`  [${ii}]=${s}`);
         }
       });

@@ -44,7 +44,8 @@
   },
   "bin": {
     "oliver-framework": "./oliver-framework",
-    "oliver-stack": "./scripts/oliver-stack"
+    "oliver-stack": "./scripts/oliver-stack",
+    "oliver-cmd": "./scripts/cmd.sh"
   },
   "version": "1.0.65"
 }
