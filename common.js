@@ -158,14 +158,7 @@ if (config.logFile) {
 global.cl = require('debug')('oliver-framework');
 
 // Common
-global.clexec = function (
-  cmd,
-  withcmd,
-  outcallback,
-  rejcallback,
-  args,
-  options
-) {
+global.clexec = function (cmd, withcmd, outcallback, rejcallback, args, options) {
   options = options || {};
   args = args || [];
   outcallback =
@@ -261,14 +254,7 @@ GM.exec = function (cmd, args, options, res = false, rej = false) {
 // clexecthen func
 const PromiseQueue = require('easy-promise-queue').default;
 var _promises = new PromiseQueue({ concurrency: 1 });
-global.clexecthen = function (
-  cmd,
-  withcmd,
-  args,
-  options,
-  outcallback,
-  rejcallback
-) {
+global.clexecthen = function (cmd, withcmd, args, options, outcallback, rejcallback) {
   options = options || {};
   args = args || {};
   withcmd = withcmd || 0;
@@ -381,11 +367,7 @@ global.module_invoke = function (callback, parentdir = 'modulefile') {
  * Invokes a hook in all enabled modules that implement it.
  * Example: Check antbuddy code
  */
-global.module_invoke_all = function (
-  callback,
-  basedir = 'modules',
-  filterdir = false
-) {
+global.module_invoke_all = function (callback, basedir = 'modules', filterdir = false) {
   var callarguments = Array.prototype.slice.call(arguments);
   callarguments.shift();
   callarguments.shift();
@@ -401,16 +383,10 @@ global.module_invoke_all = function (
       return;
     }
     var modulename = path.basename(file);
-    if (
-      !fs.existsSync(
-        path.resolve(basedir + '/' + file + '/' + modulename + '.js')
-      )
-    ) {
+    if (!fs.existsSync(path.resolve(basedir + '/' + file + '/' + modulename + '.js'))) {
       return;
     }
-    var lib = require(path.resolve(
-      basedir + '/' + file + '/' + modulename + '.js'
-    ));
+    var lib = require(path.resolve(basedir + '/' + file + '/' + modulename + '.js'));
     var ret;
     if (typeof callback == 'string') {
       if (lib[callback]) {
