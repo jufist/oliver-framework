@@ -385,8 +385,11 @@ oliver-common-exec() {
   fn_exists $verifyaction && $verifyaction "$@"
 
   action="exec$action"
+  local ret
   fn_exists $fullaction && $fullaction "$@"
+  ret=$?
   fn_exists $fullaction || exechelplist
+  return $ret
 }
 
 execIET() {
