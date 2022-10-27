@@ -67,11 +67,12 @@ vars_parse--main() {
   myargs inputargs definedargs
   set -- "${newargs[@]}"
 
-  RESTARGS="$@"
+  RESTARGS=("$@")
   [[ "$MA_version" == "" ]] && echo "Please choose version" && exit
 }
 
 exec--main() {
+  # Use rest parameters by RESTARGS instead of $@ normally here.
   echo "Main"
   exit
 }
