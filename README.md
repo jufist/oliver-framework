@@ -72,7 +72,8 @@ vars_parse--main() {
 }
 
 exec--main() {
-  # Use rest parameters by RESTARGS instead of $@ normally here.
+  # Use rest parameters by RESTARGS instead of $@ normally here or override $@ by following command
+  set -- "${RESTARGS[@]}"
   echo "Main"
   exit
 }
