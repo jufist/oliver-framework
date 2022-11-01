@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Test: MP_two=222 MA_extra=xx ./index.sh --test --version=x 11
 SCRIPT=$(readlink -f "$0")
 # No sym
 # SCRIPT=`realpath -s $0`
@@ -28,6 +29,7 @@ exec--test() {
   echo "Param: $MP_one"
   echo "Arg version: $MA_version"
   echo "Main"
+  echo "Ensure variable to rest: MA_extra: $MA_extra MP_two: $MP_two"
   exit
 }
 

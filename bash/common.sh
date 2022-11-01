@@ -232,6 +232,26 @@ myargs() {
   local i
   local j
   local more
+  # Reset 
+  for j in "${args[@]}"; do
+    [[ "${j: -1}" == "*" ]] && {
+      j=${j::-1}
+    }
+
+    short="$(echo $j | cut -d'|' -f1)"
+    long="$(echo $j | cut -d'|' -f2)"
+    varname="MA_$long"
+    export "$varname="
+  done
+
+  for j in "${params[@]}"; do
+    [[ "${j: -1}" == "*" ]] && {
+      j=${j::-1}
+    }
+
+    export "MP_$j="
+  done
+
   for i in "${arr[@]}"; do
     found=""
     for j in "${args[@]}"; do
