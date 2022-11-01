@@ -196,14 +196,16 @@ myconfirm() {
 
 # How to use:
 # definedargs=("l|local" "r|rsync")
+# definedparams=("one", "two")
 # inputargs=("$@")
 # myargs inputargs definedargs
 # Now we have:
-# Using: $MA_local
+# Using: $MA_local and MP_one
 # Also we have ${newargs[@]}
 # inputargs=("$@")
 # definedargs=("n|number", "s|sudo", "p|path")
-# myargs inputargs definedargs
+# definedparams=("one", "two")
+# myargs inputargs definedargs 
 # set -- "${newargs[@]}"
 myargs() {
   local isV4
@@ -214,20 +216,29 @@ myargs() {
     eval "arr=(\${$1[@]})"
     local args
     eval "args=(\${$2[@]})"
+    local params
+    eval "params=(\${$3[@]})"
   }
   [ "$isV4" == "1" ] || {
     local -n arr=$1
     local -n args=$2
+    local -n params=${3:-"no"}
   }
   local short=""
   local long=""
   local varname="x"
   export newargs=()
   local found=""
+  local i
+  local j
+  local more
   for i in "${arr[@]}"; do
-
     found=""
     for j in "${args[@]}"; do
+      [[ "${j: -1}" == "*" ]] && {
+        j=${j::-1}
+      }
+
       short="$(echo $j | cut -d'|' -f1)"
       long="$(echo $j | cut -d'|' -f2)"
       # echo "$short:$long"
@@ -246,6 +257,48 @@ myargs() {
       newargs+=("${i}")
     fi
   done
+
+  i=0
+  for j in "${params[@]}"; do
+    [[ "${j: -1}" == "*" ]] && {
+      j=${j::-1}
+    }
+
+    export "MP_$j=${newargs[$i]}"
+    i=$((i+1))
+  done
+
+  # Required arguments
+  for j in "${args[@]}"; do
+    more=""
+    [[ "${j: -1}" == "*" ]] && {
+      more="required"
+      j=${j::-1}
+    }
+    short="$(echo $j | cut -d'|' -f1)"
+    long="$(echo $j | cut -d'|' -f2)"
+    varname="MA_$long"
+    eval "i=\$$varname"
+    [[ "$more" == "required" ]] && {
+      [[ "$i" == "" ]] && echo "Please fill --$long=..." && return 1
+    }
+  done
+
+  # Required params
+  for j in "${params[@]}"; do
+    more=""
+    [[ "${j: -1}" == "*" ]] && {
+      more="required"
+      j=${j::-1}
+    }
+    long="$j"
+    varname="MP_$long"
+    eval "i=\$$varname"
+    [[ "$more" == "required" ]] && {
+      [[ "$i" == "" ]] && echo "Please enter param to $0 ..." && return 1
+    }
+  done
+  return 0
 }
 
 preventExist() {
@@ -298,6 +351,7 @@ exechelplist() {
     ! fn_exists $i && continue
     local def=$(type $i)
     echo ""
+    echo "$def" | grep 'defined'
     echo "$def" | grep -F "\$" | grep -v -F "\$@"
   done
 }
@@ -379,7 +433,10 @@ oliver-common-exec() {
 
   local cd
   parseaction="vars_parse$action"
-  fn_exists $parseaction && $parseaction "$@"
+  fn_exists $parseaction && {
+    $parseaction "$@"
+    [[ "$?" != "0" ]] && return 1
+  }
 
   verifyaction="vars_verify$action"
   fn_exists $verifyaction && $verifyaction "$@"

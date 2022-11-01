@@ -61,19 +61,35 @@ oliver-common-exec --check-existed '$M0 $M1' "$@"
 ## Some more user cases
 
 ```bash
+#!/bin/bash
+
+SCRIPT=$(readlink -f "$0")
+# No sym
+# SCRIPT=`realpath -s $0`
+SCRIPTPATH=$(dirname $SCRIPT)
+WORKINGDIR=$(pwd)
+MYHOME="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+
+shopt -s expand_aliases
+
+export DEBUG=${DEBUG:-"*"}
+
 vars_parse--main() {
-  definedargs=("v|version" "e|extra")
+  definedargs=("v|version*" "e|extra")
+  definedparams=("one", "two")
   inputargs=("$@")
-  myargs inputargs definedargs
+  myargs inputargs definedargs definedparams
+  [[ "$?" != "0" ]] && return 1
   set -- "${newargs[@]}"
 
   RESTARGS=("$@")
-  [[ "$MA_version" == "" ]] && echo "Please choose version" && exit
 }
 
 exec--main() {
   # Use rest parameters by RESTARGS instead of $@ normally here or override $@ by following command
   set -- "${RESTARGS[@]}"
+  echo "Param: $MP_one"
+  echo "Arg version: $MA_version"
   echo "Main"
   exit
 }
