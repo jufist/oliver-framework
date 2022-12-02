@@ -623,6 +623,7 @@ ech() {
     cd ../../
     echo "$out" | node -e "let out=require('fs').readFileSync(0, 'utf-8'); var debug = require('debug')('ech:$type'); debug(out.trim());" >&2
   )
+  return 0
 }
 
 # insert_after_token "content" "token" "piecetoadd"
