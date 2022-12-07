@@ -328,14 +328,14 @@ preventExist() {
   export M1="$1"
   export M2="$2"
   export M3="$3"
-  printarg=$(echo "$arg" | envsubst)
+  printarg=$(echo "$arg" | envsubst | xargs)
   u=$(whoami)
   d=$(ps aux)
-  e=$(echo "$d" | grep "$u" | grep "$printarg " | grep -v "$PPID" | grep -v "grep " | grep -v -e "^[[:space:]]*$" | wc -l)
+  e=$(echo "$d" | grep "$u" | grep -- "$printarg" | grep -v "$PPID" | grep -v "grep " | grep -v -e "^[[:space:]]*$" | wc -l)
 
   if [ "$e" -gt "1" ]; then
     echo "[Error] Someone is running this process but this allows to run only one instance at a time. Please try again later!"
-    exit 0
+    exit 1
   fi
 }
 

@@ -55,7 +55,7 @@ exec--add() {
 MYHOME="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 
 . $MYHOME/node_modules/oliver-framework/bash/common.sh
-oliver-common-exec --check-existed '$M0 $M1' "$@"
+oliver-common-exec --check-existed '$M0 $M1 $M2 $M3' "$@"
 ```
 
 ## Some more user cases
