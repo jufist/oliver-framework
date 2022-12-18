@@ -576,7 +576,7 @@ basheval() {
   local cmd1=$1
   shift
   local cmd=$(addQuote "$@")
-  ech "log" "[exec] $cmd1 $cmd"
+  ech "log" "full" "[exec] $cmd1 $cmd"
   [[ "$dry_run" == "" ]] && eval "$cmd1 $cmd"
 }
 
