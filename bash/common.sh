@@ -40,6 +40,27 @@ addSingleQuote() {
   echo "$1" | sed 's/\\/\\\\/g'
 }
 
+filter_object() {
+  local content search exp
+  content=$(</dev/stdin)
+  exp=$1
+  echo "$content" | node -e "let out=require('fs').readFileSync(0, 'utf-8');
+let _orig = out;
+let obj = out;
+try {
+  out=JSON.parse(out);
+}
+catch (e) {
+  console.error('Cannot convert array')
+  console.error(_orig);
+  out=[];
+}
+obj=out;
+$exp
+console.log(JSON.stringify(obj));
+"
+}
+
 replace_vianode() {
   local content search replace
   content=$(</dev/stdin)
