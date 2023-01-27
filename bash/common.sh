@@ -2,6 +2,20 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 . ${SCRIPT_DIR}/auto.sh
+
+# P1. Convert star since assign like will cause asterisk to expand
+function asterisk() {
+  local data
+  while read -r data; do
+    [[ "$1" == "encode" ]] && {
+        echo "$data" | sed 's~*~ @ST@R ~g'
+    }
+    [[ "$1" == "decode" ]] && {
+        echo "$data" | sed 's~ @ST@R ~*~g'
+    }
+  done
+}
+
 function jsonmerge() {
   jq -s 'def deepmerge(a;b):
   reduce b[] as $item (a;
@@ -602,6 +616,14 @@ basheval() {
 }
 
 ech() {
+  local data
+  [[ "$1" == "--pipe" ]] && {
+    shift
+    while read -r data; do
+      ech $@ "$data"
+    done
+    return 0
+  }
   local type=$1
   if [[ "$2" != "" ]]; then
     shift
@@ -615,6 +637,9 @@ ech() {
   else
     short="head"
   fi
+  local withtime
+  withtime=""
+  [[ "$WITHTIME" != "" ]] && withtime="[$(date +%T)] "
 
   #if [[ "$DEBUG" == "" && "$type" == "debug" ]]; then
   #    return
@@ -642,7 +667,7 @@ ech() {
   [ "$QUIET" == "" ] && [ "$DEBUG" != "" ] && [ "$DEBUGUSEBASH" == "" ] && (
     cd ${OLIVERDIR}
     cd ../../
-    echo "$out" | node -e "let out=require('fs').readFileSync(0, 'utf-8'); var debug = require('debug')('ech:$type'); debug(out.trim());" >&2
+    echo "${withtime}$out" | node -e "let out=require('fs').readFileSync(0, 'utf-8'); var debug = require('debug')('ech:$type'); debug(out.trim());" >&2
   )
   return 0
 }
