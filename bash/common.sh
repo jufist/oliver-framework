@@ -2,6 +2,11 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 . ${SCRIPT_DIR}/auto.sh
+OLIVER_DIR="$(dirname ${SCRIPT_DIR})"
+
+uri_escape() {
+  echo "$@" | ${OLIVER_DIR}/scripts/urlencode
+}
 
 # P1. Convert star since assign like will cause asterisk to expand
 function asterisk() {
