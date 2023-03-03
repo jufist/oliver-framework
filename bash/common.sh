@@ -52,13 +52,11 @@ funclock() {
         sleep 1
         timeout=$((timeout-1))
         # To check timeout
-        [[ "$timeout" == "0" ]] && exit 9
+        [[ "$timeout" == "0" ]] && return 9
       done
 
       basheval "$@"
-      echo "$@" > tmp/funclock
-
-      exit 0
+      return 0
   ) 9>"$lockFile"
   ss=$?
 
@@ -67,7 +65,7 @@ funclock() {
       echo "Failed to acquire lock $lockFile" >&2
   fi
 
-  exit $ss
+  return $ss
 }
 
 function textBetweenTag() {
