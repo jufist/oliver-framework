@@ -36,6 +36,40 @@ function jsonmerge() {
   deepmerge({}; .)' $@
 }
 
+funclock() {
+  local lockName lockFile lockParam timeout ss
+  lockParam=$1
+  shift
+  timeout=$1
+  shift
+  lockName="$(printf "%s\n" "${lockParam^^}" | tr -cd '[:alnum:]\n')"
+  lockFile="/tmp/lock.${lockName:-noname}"
+  (
+      while ! flock -n 9
+      do
+        echo -en "\rFunclock waiting ${timeout}." >&2
+        # echo -n "." >&2
+        sleep 1
+        timeout=$((timeout-1))
+        # To check timeout
+        [[ "$timeout" == "0" ]] && exit 9
+      done
+
+      basheval "$@"
+      echo "$@" > tmp/funclock
+
+      exit 0
+  ) 9>"$lockFile"
+  ss=$?
+
+  if [ $ss -eq 9 ]
+  then
+      echo "Failed to acquire lock $lockFile" >&2
+  fi
+
+  exit $ss
+}
+
 function textBetweenTag() {
   local tag=$2
   echo "$1" | sedd -n "/<$tag/,/\/$tag>/p"
