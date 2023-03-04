@@ -38,12 +38,20 @@ function jsonmerge() {
 
 funclock() {
   local lockName lockFile lockParam timeout ss
+  local uniqueFN
   lockParam=$1
   shift
   timeout=$1
   shift
   lockName="$(printf "%s\n" "${lockParam^^}" | tr -cd '[:alnum:]\n')"
   lockFile="/tmp/lock.${lockName:-noname}"
+  touch /tmp/lock.alls
+  uniqueFN=$(cat /tmp/lock.alls | grep -F -- "$lockFile" | cut -d '|' -f 1)
+  [[ "$uniqueFN" == "" ]] && {
+    uniqueFN=$(mktemp /tmp/lock.XXXXXXXXXXXX)
+    echo "$uniqueFN|$lockFile" >> /tmp/lock.alls
+  }
+  lockFile="$uniqueFN"
   (
       while ! flock -n 9
       do
