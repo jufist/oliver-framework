@@ -121,20 +121,27 @@ console.log(JSON.stringify(obj));
 }
 
 replace_vianode() {
-  local content search replace
+  local content search replace raw
   content=$(</dev/stdin)
   search=$(addSingleQuote "$1")
   replace=$2
+  raw=$3
   echo "$content" | node -e "
 	search=process.argv[1];
 	replace=process.argv[2];
+	raw=process.argv[3];
 	// process.stderr.write(search);
 	// console.error([search, replace]);
-        let content=require('fs').readFileSync(0, 'utf-8');
-            let re = new RegExp(search, 'g');
-            content = content.replace(re, replace);
+      let content=require('fs').readFileSync(0, 'utf-8');
+      if (!raw) {
+        let re = new RegExp(search, 'g');
+        content = content.replace(re, replace);
+      }
+    else {
+        content = content.replace(search, replace);
+    }
 	    process.stdout.write(content);
-    " "$search" "$replace"
+    " "$search" "$replace" "$raw"
 }
 
 # remove specified host from /etc/hosts
