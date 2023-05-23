@@ -64,7 +64,7 @@ funclock() {
       done
 
       basheval "$@"
-      return 0
+      return $?
   ) 9>"$lockFile"
   ss=$?
 
@@ -664,7 +664,11 @@ basheval() {
   shift
   local cmd=$(addQuote "$@")
   ech "log" "full" "[exec] $cmd1 $cmd"
-  [[ "$dry_run" == "" ]] && eval "$cmd1 $cmd"
+  [[ "$dry_run" == "" ]] && {
+    eval "$cmd1 $cmd"
+    return $?
+  }
+  return 0
 }
 
 ech() {
