@@ -43,7 +43,7 @@ funclock() {
   shift
   timeout=$1
   shift
-  lockName="$(printf "%s\n" "${lockParam^^}" | tr -cd '[:alnum:]\n')"
+  lockName="$(printf "%s\n" "${lockParam^^}" | tr -cd '[:alnum:]\n' | xargs)"
   lockFile="/tmp/lock.${lockName:-noname}"
   touch /tmp/lock.alls
   uniqueFN=$(cat /tmp/lock.alls | grep -F -- "$lockFile" | cut -d '|' -f 1)
