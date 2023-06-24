@@ -73,6 +73,9 @@ funclock() {
       echo "Failed to acquire lock $lockFile" >&2
   fi
 
+  # Remove the lock file
+  rm "$lockFile"
+
   return $ss
 }
 
