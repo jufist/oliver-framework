@@ -803,10 +803,15 @@ switchenv() {
   [ -f config.${namespace}.js ] && cp config.${namespace}.js config.js
 }
 
+loadenvf() {
+  . $1
+  eval "$(cat $1 | grep -E '^[A-Z_][A-Z0-9_]*=' | sed 's/^/export /g')"
+}
+
 loadenv() {
-  [ -f ./.env.all ] && . ./.env.all
-  [[ "${namespace}" == "" || ! -f ./.env.${namespace} ]] && [ -f ./.env ] && . ./.env
-  [ -f ./.env.${namespace} ] && . ./.env.${namespace}
+  [ -f ./.env.all ] && loadenvf ./.env.all
+  [[ "${namespace}" == "" || ! -f ./.env.${namespace} ]] && [ -f ./.env ] && loadenvf ./.env
+  [ -f ./.env.${namespace} ] && loadenvf ./.env.${namespace}
 }
 
 pids_list_descendants() {
