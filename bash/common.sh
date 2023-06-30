@@ -329,7 +329,7 @@ myargs() {
     }
 
     short="$(echo $j | cut -d'|' -f1)"
-    long="$(echo $j | cut -d'|' -f2)"
+    long="$(echo $j | cut -d'|' -f2 | sed 's/[-]/_/g')"
     varname="MA_$long"
     export "$varname="
   done
