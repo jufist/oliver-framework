@@ -568,6 +568,7 @@ execIET() {
   local shellarg=$6
   local localenv=$7
   local simulate=$8
+  local usesshpass=$9
   [[ "$command" == "" ]] && command="/bin/bash"
 
   [[ "$simulate" != "" ]] && {
@@ -586,9 +587,11 @@ execIET() {
       # "sudo -s su kazoo -c '
       command="ssh $shellarg $item 'sudo -s su $user -c \"${localenv}${command}\"'"
     fi
+    export SSHPASS="$usesshpass"
+    [[ "$usesshpass" != "" ]] && command="sshpass -e $command"
   }
 
-  ech "log" "[Exec] $command"
+  ech "log" "[Exec] $usesshpass~$command"
   [[ "$dry_run" == "" ]] && eval $command
   [[ "$dry_run" != "" ]] && ech log $command
 }
@@ -649,7 +652,7 @@ execInEachType() {
     NODETYPE=$(echo "$item::" | cut -d ":" -f 2)
     item=$(echo "$item::" | cut -d ":" -f 1)
     command="${callback//NODE/$item}"
-    execIET$NODETYPE "$item" "$callback" "$command" "$user" "$dry_run" "$shellarg" "$localenv" "$simulate"
+    execIET$NODETYPE "$item" "$callback" "$command" "$user" "$dry_run" "$shellarg" "$localenv" "$simulate" "$9"
   done
 }
 
