@@ -39,7 +39,7 @@ cachefunc() {
   # ech cachefunc:debug "$CACHE_FILE~$CACHE_TIME~$(($(date +%s) - $(stat -c %Y $CACHE_FILE)))"
   if [ -f $CACHE_FILE ] && [ $(($(date +%s) - $(stat -c %Y $CACHE_FILE))) -le $CACHE_TIME ]; then
     cat $CACHE_FILE
-    ech cachefunc:log "Used log for $CACHE_FILE"
+    ech cachefunc:debug "Used log for $CACHE_FILE"
     # Update time of CACHE_FILE to current time
     # touch $CACHE_FILE
     return 0
