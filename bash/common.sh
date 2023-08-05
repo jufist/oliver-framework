@@ -8,12 +8,28 @@ uri_escape() {
   echo "$@" | ${OLIVER_DIR}/scripts/urlencode
 }
 
+# Example
+# out="$(CACHE_TIME="10" cachefunc $WORKINGDI2/tmp/check)"
+#    [[ "$?" == "0" ]] && {
+#      IFS=$'\2' read -r out ret <<<$(extract_special "$out" " RESULT=> ")
+#      ech check:log "Using cached tmp/check $out~$ret"
+#      [[ "$out" != "" ]] && echo "$out"
+#      return $ret
+#    }
 cachefunc() {
   local CACHE_FILE CACHE_TIME
+  local result
+  result=""
+  [[ "$1" == "--result" ]] && {
+    shift
+    result=$1
+    shift
+  }
   [[ "$1" == "--set" ]] && {
     shift
     echo "$1" > $2
-    cat $2
+    [[ "$result" != "" ]] && echo " RESULT=> $result" > $2
+    [[ "$1" != "" ]] && echo "$1"
     return 0
   }
   CACHE_FILE=$1
@@ -123,6 +139,26 @@ seddable() {
 
 addSingleQuote() {
   echo "$1" | sed 's/\\/\\\\/g'
+}
+
+# readarray -d $'\2' messages
+# readarray -d $'\2' col1 <<<$(extract_special "${cols}" " COL=> ")
+# IFS=$'\2' read -r r i j <<<$(extract_special --error "$i" " EQUAL=> ")
+# --error would return the error if text is able to be parsed
+extract_special() {
+  local c p e
+  e=""
+  [[ "$1" == "--error" ]] && e=1 && shift
+  c="$1"
+  p="$2"
+  echo "$c" | grep -F -- "$p" >/dev/null && {
+    [[ "$e" == "1" ]] && e="0"$'\2'
+    echo "${e}${c}" | sed "s~$p~"$'\2'"~g"
+    return 0
+  }
+  [[ "$e" == "1" ]] && e="1"$'\2'
+  echo "${e}${c}"
+  return 1
 }
 
 filter_object() {
