@@ -8,6 +8,29 @@ uri_escape() {
   echo "$@" | ${OLIVER_DIR}/scripts/urlencode
 }
 
+cachefunc() {
+  local CACHE_FILE CACHE_TIME
+  [[ "$1" == "--set" ]] && {
+    shift
+    echo "$1" > $2
+    cat $2
+    return 0
+  }
+  CACHE_FILE=$1
+  local cache
+  cache=$((60 * 50)) # 50 minutes in seconds
+  CACHE_TIME=${CACHE_TIME:-"$cache"}
+  # ech cachefunc:debug "$CACHE_FILE~$CACHE_TIME~$(($(date +%s) - $(stat -c %Y $CACHE_FILE)))"
+  if [ -f $CACHE_FILE ] && [ $(($(date +%s) - $(stat -c %Y $CACHE_FILE))) -le $CACHE_TIME ]; then
+    cat $CACHE_FILE
+    ech cachefunc:log "Used log for $CACHE_FILE"
+    # Update time of CACHE_FILE to current time
+    # touch $CACHE_FILE
+    return 0
+  fi
+  return 1
+}
+
 # P1. Convert star since assign like will cause asterisk to expand
 function asterisk() {
   local data
