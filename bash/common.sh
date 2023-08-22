@@ -4,6 +4,15 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 . ${SCRIPT_DIR}/auto.sh
 OLIVER_DIR="$(dirname ${SCRIPT_DIR})"
 
+function escape_for_curl() {
+    local input_string="$1"
+    # Escape single quotes by replacing them with '\'' (end the single quoted string, insert a literal single quote, start a new single quoted string)
+    local escaped_string="${input_string//\'/\'\\\'\'}"
+    # Enclose the escaped string in single quotes
+    escaped_string="'$escaped_string'"
+    echo "$escaped_string"
+}
+
 uri_escape() {
   echo "$@" | ${OLIVER_DIR}/scripts/urlencode
 }
