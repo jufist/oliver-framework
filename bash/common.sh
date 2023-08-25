@@ -63,10 +63,15 @@ cachefunc() {
   local cache
   cache=$((60 * 50)) # 50 minutes in seconds
   CACHE_TIME=${CACHE_TIME:-"$cache"}
-  ech cachefunc:debug "$CACHE_FILE~$CACHE_TIME~$(($(date +%s) - $(stat -c %Y $CACHE_FILE)))"
+ 
+  # Debug purpose
+  if [ -f $CACHE_FILE ]; then
+    ech cachefunc:debug "$CACHE_FILE~$CACHE_TIME~$(($(date +%s) - $(stat -c %Y $CACHE_FILE)))"
+  fi
+
   if [ -f $CACHE_FILE ] && [ $(($(date +%s) - $(stat -c %Y $CACHE_FILE))) -le $CACHE_TIME ]; then
     cat $CACHE_FILE
-    ech cachefunc:debug "Used log for $CACHE_FILE"
+    ech cachefunc:debug "Used cache $CACHE_FILE"
     # Update time of CACHE_FILE to current time
     # touch $CACHE_FILE
     return 0
@@ -197,24 +202,38 @@ addSingleQuote() {
   echo "$1" | sed 's/\\/\\\\/g'
 }
 
+# @TODO Replace following to nodejs so I would be able to call from command line
+#  IFS=$'\2' read -r -d '' -a lines < <(extract_special "${cols}" " COL =>")
 # readarray -d $'\2' messages
 # readarray -d $'\2' col1 <<<$(extract_special "${cols}" " COL=> ")
 # IFS=$'\2' read -r r i j <<<$(extract_special --error "$i" " EQUAL=> ")
 # --error would return the error if text is able to be parsed
+# Moved to extract_special.js
 extract_special() {
   local c p e
   e=""
   [[ "$1" == "--error" ]] && e=1 && shift
-  c="$1"
-  p="$2"
-  echo "$c" | grep -F -- "$p" >/dev/null && {
+
+  local lines
+  marker="$2"
+
+  echo "$1" > tmp/special
+  IFS=$'\n' read -r -d '' -a lines < <(extract_special.js "$marker" --file ./tmp/special | jq -c '.[]')
+
+  # if length of lines is more than 0 then call next callback
+  if [ ${#lines[@]} -gt 0 ]; then
     [[ "$e" == "1" ]] && e="0"$'\2'
-    echo "${e}${c}" | sed "s~$p~"$'\2'"~g"
-    return 0
-  }
-  [[ "$e" == "1" ]] && e="1"$'\2'
-  echo "${e}${c}"
-  return 1
+  else
+    [[ "$e" == "1" ]] && e="1"$'\2'
+  fi
+
+  # Print e without newline
+  echo -n "$e"
+
+  local line
+  for line in "${lines[@]}"; do
+    echo "$(echo "$line" | jq -r '.')"$'\2'
+  done
 }
 
 filter_object() {
@@ -952,4 +971,4 @@ alias rsyncroot='rsync --rsync-path="sudo rsync"'
 alias rsyncputty="pscp -v -load"
 CTLWORKINGDIR="${PWD}"
 OLIVERDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && cd ../ >/dev/null && pwd)"
-# PATH="$PATH:$OLIVERDIR/scripts"
+export PATH="$PATH:$OLIVERDIR/scripts"
