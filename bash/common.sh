@@ -20,14 +20,29 @@ uri_escape() {
 # Example
 # out="$(CACHE_TIME="10" cachefunc $WORKINGDI2/tmp/check)"
 #    [[ "$?" == "0" ]] && {
+# 
+#  IFS=$'\2' ou2=($(extract_special "$out" " RESULT=> "))
+#  out="${ou2[0]}"
+#  ret="${ou2[1]}"
+# 
+# This could be wrong, check above
 #      IFS=$'\2' read -r out ret <<<$(extract_special "$out" " RESULT=> ")
 #      ech check:log "Using cached tmp/check $out~$ret"
 #      [[ "$out" != "" ]] && echo "$out"
 #      return $ret
 #    }
+# For Set
+# cachefunc --global --result 0 --set "Content" $WORKINGDI2/tmp/check
+# cachefunc --result 0 --set "Content" $WORKINGDI2/tmp/check
+
 cachefunc() {
   local CACHE_FILE CACHE_TIME
-  local result
+  local result cache_local
+  cache_local="--local"
+  [[ "$1" == "--global" ]] && {
+    cache_local=""
+    shift
+  }
   result=""
   [[ "$1" == "--result" ]] && {
     shift
@@ -36,16 +51,19 @@ cachefunc() {
   }
   [[ "$1" == "--set" ]] && {
     shift
-    echo "$1" > $2
-    [[ "$result" != "" ]] && echo " RESULT=> $result" > $2
+    CACHE_FILE=$(file_from_args $cache_local cache "$2")
+    mkdir -p "$(dirname  "$CACHE_FILE")"
+    echo "$1" > $CACHE_FILE
+    [[ "$result" != "" ]] && echo " RESULT=> $result" >> $CACHE_FILE
     [[ "$1" != "" ]] && echo "$1"
     return 0
   }
-  CACHE_FILE=$1
+  CACHE_FILE=$(file_from_args $cache_local cache "$1")
+
   local cache
   cache=$((60 * 50)) # 50 minutes in seconds
   CACHE_TIME=${CACHE_TIME:-"$cache"}
-  # ech cachefunc:debug "$CACHE_FILE~$CACHE_TIME~$(($(date +%s) - $(stat -c %Y $CACHE_FILE)))"
+  ech cachefunc:debug "$CACHE_FILE~$CACHE_TIME~$(($(date +%s) - $(stat -c %Y $CACHE_FILE)))"
   if [ -f $CACHE_FILE ] && [ $(($(date +%s) - $(stat -c %Y $CACHE_FILE))) -le $CACHE_TIME ]; then
     cat $CACHE_FILE
     ech cachefunc:debug "Used log for $CACHE_FILE"
@@ -84,22 +102,51 @@ function jsonmerge() {
   deepmerge({}; .)' $@
 }
 
+file_from_args() {
+  local lockName lockFile lockParam section
+  local uniqueFN 
+  local file_local
+  
+  file_local="/"
+  [[ "$1" == "--local" ]] && {
+    file_local="$PWD/"
+    shift
+  }
+
+  local isRemove
+  isRemove=""
+  [[ "$1" == "--remove" ]] && {
+    isRemove="yes"
+    shift
+  }
+  section=$1
+  shift
+  lockParam=$1PWD
+  lockName="$(printf "%s\n" "${lockParam^^}" | tr -cd '[:alnum:]\n' | xargs)"
+  lockFile="${file_local}tmp/${section}.${lockName:-noname}"
+  touch ${file_local}tmp/${section}.list
+  mkdir -p ${file_local}tmp/${section}
+  uniqueFN=$(cat ${file_local}tmp/${section}.list | grep -F -- "$lockFile" | cut -d '|' -f 1)
+  [[ "$uniqueFN" == "" ]] && {
+    uniqueFN=$(mktemp --dry-run ${file_local}tmp/${section}/XXXXXXXXXXXX)
+    echo "$uniqueFN|$lockFile" >> ${file_local}tmp/${section}.list
+  }
+  lockFile="$uniqueFN"
+  [[ "$isRemove" != "" ]] && {
+    rm "$lockFile" >&2
+    return $?
+  }
+  echo "$lockFile"
+}
+
 funclock() {
   local lockName lockFile lockParam timeout ss
   local uniqueFN
   lockParam=$1
+  lockFile=$(file_from_args lock "$lockParam")
   shift
   timeout=$1
   shift
-  lockName="$(printf "%s\n" "${lockParam^^}" | tr -cd '[:alnum:]\n' | xargs)"
-  lockFile="/tmp/lock.${lockName:-noname}"
-  touch /tmp/lock.alls
-  uniqueFN=$(cat /tmp/lock.alls | grep -F -- "$lockFile" | cut -d '|' -f 1)
-  [[ "$uniqueFN" == "" ]] && {
-    uniqueFN=$(mktemp /tmp/lock.XXXXXXXXXXXX)
-    echo "$uniqueFN|$lockFile" >> /tmp/lock.alls
-  }
-  lockFile="$uniqueFN"
   (
       while ! flock -n 9
       do
@@ -122,7 +169,7 @@ funclock() {
   fi
 
   # Remove the lock file
-  rm "$lockFile"
+  file_from_args --remove lock "$lockParam"
 
   return $ss
 }
