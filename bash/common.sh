@@ -35,6 +35,7 @@ uri_escape() {
 # cachefunc --global --result 0 --set "Content" $WORKINGDI2/tmp/check
 # cachefunc --result 0 --set "Content" $WORKINGDI2/tmp/check
 
+declare -A cachefunc_memory
 cachefunc() {
   local CACHE_FILE CACHE_TIME
   local result cache_local
@@ -70,10 +71,20 @@ cachefunc() {
   fi
 
   if [ -f $CACHE_FILE ] && [ $(($(date +%s) - $(stat -c %Y $CACHE_FILE))) -le $CACHE_TIME ]; then
-    cat $CACHE_FILE
-    ech cachefunc:debug "Used cache $CACHE_FILE"
-    # Update time of CACHE_FILE to current time
-    # touch $CACHE_FILE
+    local safe_key
+    safe_key=$(echo "$CACHE_FILE" | sed 's/[^a-zA-Z0-9_]/_/g')
+    # If cachefunc_memory[$CACHE_FILE] is not defined then set it up
+    if [[ ! -v "cachefunc_memory[$safe_key]" ]]; then
+        # Store the result of 'cat $CACHE_FILE' in cachefunc_memory[$CACHE_FILE]
+        cachefunc_memory[$safe_key]=$(cat "$CACHE_FILE")
+        [[ "$DEBUG" == "*" ]] && ech cache:debug "cachefunc:debug Used cache file $1"
+    else
+        [[ "$DEBUG" == "*" ]] && ech cache:debug "cachefunc:debug Used cache memory $1"
+    fi
+    echo ${cachefunc_memory[$safe_key]}
+
+    # Update the modification time of CACHE_FILE to the current time
+    touch "$CACHE_FILE"
     return 0
   fi
   return 1
@@ -581,7 +592,7 @@ verify_phone() {
   fi
 }
 
-fn_exists() { test x$(type -t $1) = xfunction; }
+fn_exists() { test "x$(type -t $1)" = "xfunction"; }
 
 exechelplist() {
   local cmd=$(basename $0)
