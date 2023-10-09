@@ -24,9 +24,6 @@ uri_escape() {
 #  IFS=$'\2' ou2=($(extract_special "$out" " RESULT=> "))
 #  out="${ou2[0]}"
 #  ret="${ou2[1]}"
-# 
-# This could be wrong, check above
-#      IFS=$'\2' read -r out ret <<<$(extract_special "$out" " RESULT=> ")
 #      ech check:log "Using cached tmp/check $out~$ret"
 #      [[ "$out" != "" ]] && echo "$out"
 #      return $ret
