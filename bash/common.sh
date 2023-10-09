@@ -214,10 +214,9 @@ addSingleQuote() {
 }
 
 # @TODO Replace following to nodejs so I would be able to call from command line
-#  IFS=$'\2' read -r -d '' -a lines < <(extract_special "${cols}" " COL =>")
-# readarray -d $'\2' messages
-# readarray -d $'\2' col1 <<<$(extract_special "${cols}" " COL=> ")
-# IFS=$'\2' read -r r i j <<<$(extract_special --error "$i" " EQUAL=> ")
+# readarray -d $'\2' newcols <<<$(extract_special "${cols}" " COL=> ")
+# out=$(echo "${newcols[0]}" | sed '/./,$!d' | tr -d $'\2')
+# ret=$(echo "${newcols[1]}" | sed '/./,$!d' | tr -d $'\2')
 # --error would return the error if text is able to be parsed
 # Moved to extract_special.js
 extract_special() {
