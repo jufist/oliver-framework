@@ -78,7 +78,7 @@ cachefunc() {
     else
         [[ "$DEBUG" == "*" ]] && ech cache:debug "cachefunc:debug Used cache memory $1"
     fi
-    echo ${cachefunc_memory[$safe_key]}
+    echo "${cachefunc_memory[$safe_key]}"
 
     # Update the modification time of CACHE_FILE to the current time
     touch "$CACHE_FILE"
