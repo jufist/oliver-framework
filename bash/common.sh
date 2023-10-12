@@ -63,11 +63,11 @@ cachefunc() {
   CACHE_TIME=${CACHE_TIME:-"$cache"}
  
   # Debug purpose
-  if [ -f $CACHE_FILE ]; then
+  if [[ -f "$CACHE_FILE" ]]; then
     ech cachefunc:debug "$CACHE_FILE~$CACHE_TIME~$(($(date +%s) - $(stat -c %Y $CACHE_FILE)))"
   fi
 
-  if [ -f $CACHE_FILE ] && [ $(($(date +%s) - $(stat -c %Y $CACHE_FILE))) -le $CACHE_TIME ]; then
+  if [[ -f $CACHE_FILE ]] && [ $(($(date +%s) - $(stat -c %Y $CACHE_FILE))) -le $CACHE_TIME ]; then
     local safe_key
     safe_key=$(echo "$CACHE_FILE" | sed 's/[^a-zA-Z0-9_]/_/g')
     # If cachefunc_memory[$CACHE_FILE] is not defined then set it up
