@@ -135,11 +135,11 @@ file_from_args() {
   section=$1
   shift
   lockParam=$1PWD
-  lockName="$(printf "%s\n" "${lockParam^^}" | tr -cd '[:alnum:]\n' | xargs)"
+  lockName="$(printf "%s\n" "${lockParam^^}" | xargs | tr -cd '[:alnum:]\n')"
   lockFile="${file_local}tmp/${section}.${lockName:-noname}"
   touch ${file_local}tmp/${section}.list
   mkdir -p ${file_local}tmp/${section}
-  uniqueFN=$(cat ${file_local}tmp/${section}.list | grep -F -- "$lockFile" | cut -d '|' -f 1)
+  uniqueFN=$(cat ${file_local}tmp/${section}.list | grep -F -- "$lockFile" | cut -d '|' -f 1 | head -n 1)
   [[ "$uniqueFN" == "" ]] && {
     uniqueFN=$(mktemp --dry-run ${file_local}tmp/${section}/XXXXXXXXXXXX)
     echo "$uniqueFN|$lockFile" >> ${file_local}tmp/${section}.list
@@ -149,7 +149,7 @@ file_from_args() {
     rm "$lockFile" >&2
     return $?
   }
-  echo "$lockFile"
+  echo "$lockFile" 
 }
 
 funclock() {
