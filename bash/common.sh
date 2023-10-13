@@ -162,8 +162,13 @@ export_functions() {
     done
 
     # Export all variables
-    for var in $(declare -p | cut -d ' ' -f 3); do
-        export "$var"
+    for var in $(declare -p); do
+        var_small=$(echo "$var" | cut -d ' ' -f 3)
+        var_name=$(echo "${var_small}" | cut -d'=' -f1)
+        var_value=$(echo "${var_small}" | cut -d'=' -f2-)
+        if [[ "${var_small}" != "declare -r "* && ! "$var_name" =~ [^a-zA-Z_] ]]; then
+            export "$var_name"
+        fi
     done
 }
 
@@ -223,7 +228,8 @@ extract_special() {
   local lines
   marker="$2"
 
-  echo "$1" > tmp/special
+  mkdir -p ./tmp
+  echo "$1" > ./tmp/special
   IFS=$'\n' read -r -d '' -a lines < <(extract_special.js "$marker" --file ./tmp/special | jq -c '.[]')
 
   # if length of lines is more than 0 then call next callback
