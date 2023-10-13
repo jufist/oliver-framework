@@ -160,6 +160,11 @@ export_functions() {
     for func in $function_names; do
         export -f "$func"
     done
+
+    # Export all variables
+    for var in $(declare -p | cut -d ' ' -f 3); do
+        export "$var"
+    done
 }
 
 # Func example
