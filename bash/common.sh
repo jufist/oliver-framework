@@ -120,9 +120,9 @@ file_from_args() {
   local uniqueFN 
   local file_local
   
-  file_local="/"
+  file_local="/dev/shm/"
   [[ "$1" == "--local" ]] && {
-    file_local="$PWD/"
+    file_local="/dev/shm$PWD/"
     shift
   }
 
@@ -137,8 +137,8 @@ file_from_args() {
   lockParam=$1PWD
   lockName="$(printf "%s\n" "${lockParam^^}" | xargs | tr -cd '[:alnum:]\n')"
   lockFile="${file_local}tmp/${section}.${lockName:-noname}"
-  touch ${file_local}tmp/${section}.list
   mkdir -p ${file_local}tmp/${section}
+  touch ${file_local}tmp/${section}.list
   uniqueFN=$(cat ${file_local}tmp/${section}.list | grep -F -- "$lockFile" | cut -d '|' -f 1 | head -n 1)
   [[ "$uniqueFN" == "" ]] && {
     uniqueFN=$(mktemp --dry-run ${file_local}tmp/${section}/XXXXXXXXXXXX)
@@ -152,6 +152,11 @@ file_from_args() {
   echo "$lockFile" 
 }
 
+# Func example
+# loginauto() {
+#  funclock "$(echo "$@" | tr -cd '[:alnum:]\n')" "60" "loginauto_exec $(addQuote "$@")"
+#  return $?
+# }
 funclock() {
   local lockName lockFile lockParam timeout ss
   local uniqueFN
@@ -160,31 +165,9 @@ funclock() {
   shift
   timeout=$1
   shift
-  (
-      while ! flock -n 9
-      do
-        echo -en "\rFunclock waiting ${timeout}." >&2
-        # echo -n "." >&2
-        sleep 1
-        timeout=$((timeout-1))
-        # To check timeout
-        [[ "$timeout" == "0" ]] && return 9
-      done
 
-      basheval "$@"
-      return $?
-  ) 9>"$lockFile"
-  ss=$?
-
-  if [ $ss -eq 9 ]
-  then
-      echo "Failed to acquire lock $lockFile" >&2
-  fi
-
-  # Remove the lock file
-  file_from_args --remove lock "$lockParam"
-
-  return $ss
+  queued_script.sh "$lockFile" "$timeout" "$@"
+  return $?
 }
 
 function textBetweenTag() {
