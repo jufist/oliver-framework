@@ -152,6 +152,16 @@ file_from_args() {
   echo "$lockFile" 
 }
 
+export_functions() {
+    # Get a list of all function names in the current script
+    function_names=$(declare -F -p | cut -d ' ' -f 3)
+
+    # Export each function
+    for func in $function_names; do
+        export -f "$func"
+    done
+}
+
 # Func example
 # loginauto() {
 #  funclock "$(echo "$@" | tr -cd '[:alnum:]\n')" "60" "loginauto_exec $(addQuote "$@")"
@@ -166,6 +176,7 @@ funclock() {
   timeout=$1
   shift
 
+  export_functions
   queued_script.sh "$lockFile" "$timeout" "$@"
   return $?
 }
@@ -852,8 +863,10 @@ ech() {
     echo "$out" >&2
   )
   [ "$QUIET" == "" ] && [ "$DEBUG" != "" ] && [ "$DEBUGUSEBASH" == "" ] && (
-    cd ${OLIVERDIR}
-    cd ../../
+    [[ ! -d "node_modules/oliver-framework" ]] && {
+      cd ${OLIVERDIR}
+      cd ../../
+    }
     echo "${withtime}$out" | node -e "let out=require('fs').readFileSync(0, 'utf-8'); var debug = require('debug')('ech:$type'); debug(out.trim());" >&2
   )
   return 0
