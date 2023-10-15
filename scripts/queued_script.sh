@@ -5,23 +5,49 @@ shift
 INITTIMEOUT=$1
 shift
 QUEUEFILE="$LOCKFILE.queue"
+LOCKSFILE="/dev/shm/mylocks"
 
 [[ ! -f "$LOCKFILE" ]] && {
   mkdir -p "$(dirname $LOCKFILE)"
   touch "$LOCKFILE"
 }
+[[ ! -f "$LOCKSFILE" ]] && touch "$LOCKSFILE"
+
+get_lock_fd() {
+  local lock_fd
+  lock_fd=$(cat "$LOCKSFILE" | grep -F "$LOCKFILE|" | cut -d "|" -f 2)
+    
+  if [[ "$lock_fd" == "" ]]; then
+    # Find available unique lock_fd
+    for i in {9..100}; do  # Adjust the range as needed
+      # Check if the lock_fd is not in use
+      if ! grep -qF "|$i|" "$LOCKSFILE"; then
+        lock_fd=$i
+        break
+      fi
+    done
+    echo "$LOCKFILE|$lock_fd|" >> "$LOCKSFILE"
+  fi
+  
+  echo "$lock_fd"
+}
+
+lock_fd=$(get_lock_fd)
 
 # Use flock to obtain an exclusive lock on the lock file
-exec 9<"$LOCKFILE"
+eval "exec ${lock_fd}<$LOCKFILE"
 
 # Function to clean up the QUEUEFILE
 queue_script_cleanup() {
-    echo "[$$] Received CtrlC. Cleaning">&2
+    echo "[$$] Received CtrlC. Cleaning with queue $QUEUEFILE">&2
     rm -f "$QUEUEFILE"
+
+    # Escape slashes in the LOCKFILE variable and remove LOCKFILE entry from LOCKSFILE, using the escaped variable
+    escaped_LOCKFILE=$(sed 's/\//\\\//g' <<< "$LOCKFILE")
+    sed -i "/^$escaped_LOCKFILE/d" "$LOCKSFILE"
     exit
 }
 
-# Trap the CtrlC signal and call the cleanup function
 trap queue_script_cleanup SIGINT
 
 queue_pos() {
@@ -45,14 +71,14 @@ queue_pos() {
 # Try to obtain the lock with a timeout (in seconds)
 # Calculate the timeout based on the number of items in the queue
 added_to_queue=no
-if ! flock -n 9; then
+if ! flock -n "${lock_fd}"; then
     [[ ! -f "$QUEUEFILE" ]] && touch "$QUEUEFILE"
     echo "$$" >> "$QUEUEFILE"
     count=0
     cur_queue_pos=$(queue_pos "$$" "$QUEUEFILE")
     timeout=$((INITTIMEOUT * cur_queue_pos))
-    echo "[$$] Another instance is running. Waiting for the lock in $timeout" >&2
-    while ! flock -n 9; do
+    echo "[$$] Another instance is running at ${lock_fd}. Waiting for the lock in $timeout with queue $QUEUEFILE" >&2
+    while ! flock -n "${lock_fd}"; do
         new_queue_pos=$(queue_pos "$$" "$QUEUEFILE")
         if [[ "$cur_queue_pos" != "$new_queue_pos" ]]; then
           # Refresh the timeout
@@ -86,14 +112,19 @@ while [ "$(head -n 1 "$QUEUEFILE")" != "$$" ]; do
 done
 
 # Your code to be executed goes here
-echo "[$$] $(date '+%F %T') Starting the job for process $$..." >&2
+echo "[$$] $(date '+%F %T') Starting the job for process $$ with queue $QUEUEFILE" >&2
 eval "$@"
 ret=$?
-echo "[$$] $(date '+%F %T') Job completed for process $$." >&2
+echo "[$$] $(date '+%F %T') Job completed for process $$ with queue $QUEUEFILE." >&2
 
 # Release the lock and remove ourselves from the queue
-exec 9>&-
+eval "exec ${lock_fd}>&-"
 
 # Remove $$ out of QUEUEFILE
 sed -i "/^$$\$/d" "$QUEUEFILE"
+
+# Escape slashes in the LOCKFILE variable and remove LOCKFILE entry from LOCKSFILE, using the escaped variable
+escaped_LOCKFILE=$(sed 's/\//\\\//g' <<< "$LOCKFILE")
+sed -i "/^$escaped_LOCKFILE/d" "$LOCKSFILE"
+
 exit $ret
