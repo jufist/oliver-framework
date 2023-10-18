@@ -166,7 +166,7 @@ export_functions() {
         var_small=$(echo "$var" | cut -d ' ' -f 3)
         var_name=$(echo "${var_small}" | cut -d'=' -f1)
         var_value=$(echo "${var_small}" | cut -d'=' -f2-)
-        if [[ "${var_small}" != "declare" && "${var_name}" != "_" && "${var_name}" != "BASH"* && "${var_small}" != "declare -r "* && ! "$var_name" =~ [^A-Z_] ]]; then
+        if [[ "${var_small}" != "declare" && "${var_name}" != "_" && "${var_name}" != "BASH"* && "${var_small}" != "declare -r "* && "$var_name" =~ ^[A-Z_]+$ ]]; then
             fn_exists $var_name && continue
             export "$var_name"
         fi
