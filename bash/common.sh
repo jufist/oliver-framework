@@ -229,12 +229,8 @@ extract_special() {
   local lines
   marker="$2"
 
-  mkdir -p ./tmp
-  echo "$1" > ./tmp/special
-  IFS=$'\n' read -r -d '' -a lines < <(extract_special.js "$marker" --file ./tmp/special | jq -c '.[]')
-
   # if length of lines is more than 0 then call next callback
-  if [ ${#lines[@]} -gt 0 ]; then
+  if [ -z "$1" ]; then
     [[ "$e" == "1" ]] && e="0"$'\2'
   else
     [[ "$e" == "1" ]] && e="1"$'\2'
@@ -242,11 +238,7 @@ extract_special() {
 
   # Print e without newline
   echo -n "$e"
-
-  local line
-  for line in "${lines[@]}"; do
-    echo "$(echo "$line" | jq -r '.')"$'\2'
-  done
+  echo "$1" | sed "s~$2~"$'\2'"\n~g"
 }
 
 filter_object() {
