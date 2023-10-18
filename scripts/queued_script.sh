@@ -29,7 +29,7 @@ get_lock_fd() {
     echo "$LOCKFILE|$lock_fd|" >> "$LOCKSFILE"
   fi
   
-  echo "$lock_fd"
+  echo "$lock_fd" | head -n 1
 }
 
 lock_fd=$(get_lock_fd)
