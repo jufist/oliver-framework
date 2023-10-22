@@ -67,6 +67,10 @@ cachefunc() {
     ech cachefunc:debug "$CACHE_FILE~$CACHE_TIME~$(($(date +%s) - $(stat -c %Y $CACHE_FILE)))"
   fi
 
+  local touch
+  touch=""
+  [[ "$1" == "--touch" ]] && touch=yes && shift
+
   if [[ -f $CACHE_FILE ]] && [ $(($(date +%s) - $(stat -c %Y $CACHE_FILE))) -le $CACHE_TIME ]; then
     local safe_key
     safe_key=$(echo "$CACHE_FILE" | sed 's/[^a-zA-Z0-9_]/_/g')
@@ -81,7 +85,7 @@ cachefunc() {
     echo "${cachefunc_memory[$safe_key]}"
 
     # Update the modification time of CACHE_FILE to the current time
-    touch "$CACHE_FILE"
+    [[ "$touch" != "" ]] && touch "$CACHE_FILE"
     return 0
   fi
   return 1
