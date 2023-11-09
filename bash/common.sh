@@ -139,7 +139,8 @@ file_from_args() {
   section=$1
   shift
   lockParam=$1PWD
-  lockName="$(printf "%s\n" "${lockParam^^}" | xargs | tr -cd '[:alnum:]\n')"
+  lockName="$(printf "%s\n" "${lockParam^^}" | tr -d $'\n')"                 
+  lockName="$(echo "$lockName" | tr -cd '[:alnum:]\n')"     
   lockFile="${file_local}tmp/${section}.${lockName:-noname}"
   mkdir -p ${file_local}tmp/${section}
   touch ${file_local}tmp/${section}.list
