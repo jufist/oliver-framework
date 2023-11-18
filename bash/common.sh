@@ -184,6 +184,12 @@ export_functions() {
 #  return $?
 # }
 funclock() {
+  local nowait
+  nowait=""
+  [[ "$1" == "--nowait" ]] && {
+    nowait="yes"
+    shift
+  }
   local lockName lockFile lockParam timeout ss
   local uniqueFN
   lockParam=$1
@@ -191,8 +197,15 @@ funclock() {
   shift
   timeout=$1
   shift
-
   export_functions
+
+  [[ "$nowait" != "" ]] && {
+    local ret
+    queued_script.sh --check "$lockFile" "$timeout" "$@"
+    ret="$?"
+    [[ "$ret" != "0" ]] && ech funclock:error "No waiting for the script." && return 111
+  }
+
   queued_script.sh "$lockFile" "$timeout" "$@"
   return $?
 }

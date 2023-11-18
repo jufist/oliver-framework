@@ -1,5 +1,11 @@
 #!/bin/bash
 
+check=""
+[[ "$1" == "--check" ]] && {
+  check="yes"
+  shift
+}
+
 LOCKFILE="$1"
 shift
 INITTIMEOUT=$1
@@ -48,7 +54,7 @@ queue_script_cleanup() {
     exit
 }
 
-trap queue_script_cleanup SIGINT
+[[ "$check" == "" ]] && trap queue_script_cleanup SIGINT
 
 queue_pos() {
     local queue_position queuefile pid queue_length
@@ -71,7 +77,10 @@ queue_pos() {
 # Try to obtain the lock with a timeout (in seconds)
 # Calculate the timeout based on the number of items in the queue
 added_to_queue=no
+# echo "XXX INSIDE queue_script checking. check=$check">&2
 if ! flock -n "${lock_fd}"; then
+    # echo "XXX [queue_script] waiting for flock. checking not good check=$check">&2
+    [[ "$check" != "" ]] && exit 1
     [[ ! -f "$QUEUEFILE" ]] && touch "$QUEUEFILE"
     echo "$$" >> "$QUEUEFILE"
     count=0
@@ -100,8 +109,9 @@ if ! flock -n "${lock_fd}"; then
     done
     added_to_queue=yes
 fi
+[[ "$check" != "" ]] && exit 0
 
-# Add this instance to the queue
+# echo "[queue_script] Add this instance to the queue $$">&2
 [[ "$added_to_queue" == "no" ]] && echo "$$" >> "$QUEUEFILE"
 
 # Wait for our turn in the queue
