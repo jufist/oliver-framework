@@ -158,24 +158,13 @@ file_from_args() {
 }
 
 export_functions() {
-    # Get a list of all function names in the current script
-    function_names=$(declare -F -p | cut -d ' ' -f 3)
-
     # Export each function
-    for func in $function_names; do
-        export -f "$func"
-    done
+    eval "$(declare -F -p | cut -d ' ' -f 3 | sed 's/^/export -f /g')"
 
     # Export all variables
-    for var in $(declare -p); do
-        var_small=$(echo "$var" | cut -d ' ' -f 3)
-        var_name=$(echo "${var_small}" | cut -d'=' -f1)
-        var_value=$(echo "${var_small}" | cut -d'=' -f2-)
-        if [[ "${var_small}" != "declare" && "${var_name}" != "_" && "${var_name}" != "BASH"* && "${var_small}" != "declare -r "* && "$var_name" =~ ^[A-Z_]+$ ]]; then
-            fn_exists $var_name && continue
-            export "$var_name"
-        fi
-    done
+    local vars
+    vars=$(declare -p | grep -F 'declare ' | grep -E ' [A-Z_]+=' | grep -vE ' (-ir|-r|NVM_|BASH|XDG)')
+    eval "$(echo "$vars" | cut -d ' ' -f 3 | cut -d '=' -f 1 | sed 's/^/export /g')"
 }
 
 # Func example
