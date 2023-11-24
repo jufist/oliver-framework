@@ -86,7 +86,7 @@ if ! flock -n "${lock_fd}"; then
     count=0
     cur_queue_pos=$(queue_pos "$$" "$QUEUEFILE")
     timeout=$((INITTIMEOUT * cur_queue_pos))
-    echo "[$$] Another instance is running at ${lock_fd}. Waiting for the lock in $timeout with queue $QUEUEFILE" >&2
+    echo "[$$] Another instance is running at ${lock_fd} Arg=${$LOCKFILE}. Waiting for the lock in $timeout with queue $QUEUEFILE" >&2
     while ! flock -n "${lock_fd}"; do
         new_queue_pos=$(queue_pos "$$" "$QUEUEFILE")
         if [[ "$cur_queue_pos" != "$new_queue_pos" ]]; then
