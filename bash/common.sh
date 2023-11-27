@@ -961,9 +961,13 @@ loadenvf() {
 }
 
 loadenv() {
+  # DEBUG is a very special variable
+  local olddebug
+  olddebug=${DEBUG:-"*,-*debug,-express*,-babel*,-sequelize*"}
   [ -f ./.env.all ] && loadenvf ./.env.all
   [[ "${namespace}" == "" || ! -f ./.env.${namespace} ]] && [ -f ./.env ] && loadenvf ./.env
   [ -f ./.env.${namespace} ] && loadenvf ./.env.${namespace}
+  export DEBUG=${DEBUG:-"${olddebug}"}
 }
 
 pids_list_descendants() {

@@ -70,9 +70,17 @@ SCRIPTPATH=$(dirname $SCRIPT)
 WORKINGDIR=$(pwd)
 MYHOME="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 
+# Optional
 shopt -s expand_aliases
 
-export DEBUG=${DEBUG:-"*"}
+export YARNGLOBALDIR=${YARNGLOBALDIR:-"$(yarn global dir)"}
+globaldir=${YARNGLOBALDIR:-"$YARNGLOBALDIR"}
+if [[ -d "$globaldir/node_modules/oliver-framework" && "$DEBUG_OLIVER" == "" ]]; then
+  . "$globaldir/node_modules/oliver-framework/bash/common.sh"
+else
+  . $(dirname $(node -e "console.log('path: \'' + require.resolve('oliver-framework'))" | grep -F "path: '" | cut -d "'" -f 2))/bash/common.sh
+fi
+loadenv
 
 vars_parse--main() {
   definedargs=("v|version*" "e|extra")
@@ -93,6 +101,8 @@ exec--main() {
   echo "Main"
   exit
 }
+
+oliver-common-exec "$@"
 ```
 
 # Using Docker Oliver Stack
