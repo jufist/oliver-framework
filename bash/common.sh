@@ -595,6 +595,12 @@ verify_phone() {
 
 fn_exists() { test "x$(type -t $1)" = "xfunction"; }
 
+execversion() {
+  [[ -f $SCRIPTPATH/package.json ]] && {
+    cat $SCRIPTPATH/package.json | grep -F '"version"'
+  }
+}
+
 exechelplist() {
   local cmd=$(basename $0)
   local funcs=($(declare -F | grep exec-- | sed 's/declare -f exec//'))
@@ -683,6 +689,11 @@ oliver-common-exec() {
   if [[ "$fullaction" == "exec--help" ]] && ! fn_exists "$fullaction"; then
     fullaction="exechelplist"
     action="--help"
+  fi
+
+  if [[ "$fullaction" == "exec--version" ]] && ! fn_exists "$fullaction"; then
+    fullaction="execversion"
+    action="--version"
   else
     fullaction="exec$action"
   fi
