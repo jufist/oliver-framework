@@ -1,5 +1,11 @@
 #!/bin/bash
 
+OFSCRIPT=$(readlink -f "$0")
+# No sym
+# SCRIPT=`realpath -s $0`
+export OFSCRIPTPATH=$(dirname $OFSCRIPT)
+export OFSOURCESCRIPTPATH=$(dirname "$(realpath ${BASH_SOURCE[1]})")
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 . ${SCRIPT_DIR}/auto.sh
 OLIVER_DIR="$(dirname ${SCRIPT_DIR})"
@@ -551,7 +557,7 @@ myargs() {
     varname="MP_$long"
     eval "i=\$$varname"
     [[ "$more" == "required" ]] && {
-      [[ "$i" == "" ]] && echo "Please enter param to $0 ..." && return 1
+      [[ "$i" == "" ]] && ech of:error "Please enter param to $0. Params are: ${params[@]}..." && return 1
     }
   done
   return 0
@@ -596,8 +602,8 @@ verify_phone() {
 fn_exists() { test "x$(type -t $1)" = "xfunction"; }
 
 execversion() {
-  [[ -f $SCRIPTPATH/package.json ]] && {
-    cat $SCRIPTPATH/package.json | grep -F '"version"'
+  [[ -f $OFSCRIPTPATH/package.json ]] && {
+    cat $OFSCRIPTPATH/package.json | grep -F '"version"'
   }
 }
 

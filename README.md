@@ -20,11 +20,17 @@
 ```bash
 #!/bin/bash
 
-SCRIPT=$(readlink -f "$0")
-# No sym
-# SCRIPT=`realpath -s $0`
-SCRIPTPATH=$(dirname $SCRIPT)
-WORKINGDIR=$(pwd)
+export YARNGLOBALDIR=${YARNGLOBALDIR:-"$(yarn global dir)"}
+globaldir=${YARNGLOBALDIR:-"$YARNGLOBALDIR"}
+if [[ -d "$globaldir/node_modules/oliver-framework" ]]; then
+  . "$globaldir/node_modules/oliver-framework/bash/common.sh"
+else
+  . $(dirname $(node -e "console.log('path: \'' + require.resolve('oliver-framework'))" | grep -F "path: '" | cut -d "'" -f 2))/bash/common.sh
+fi
+# If this is a script file
+. $OFSCRIPTPATH/includes/common.sh
+# If this is a source file
+# . $OFSOURCESCRIPTPATH/includes/common.sh
 
 exec--test() {
   echo "Testing calls"
@@ -52,9 +58,6 @@ exec--add() {
   echo "$@"
 }
 
-MYHOME="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
-
-. $(dirname $(node -e "console.log('path: \'' + require.resolve('oliver-framework'))" | grep -F "path: '" | cut -d "'" -f 2))/bash/common.sh
 oliver-common-exec --check-existed '$M0 $M1 $M2 $M3' "$@"
 ```
 
@@ -63,23 +66,21 @@ oliver-common-exec --check-existed '$M0 $M1 $M2 $M3' "$@"
 ```bash
 #!/bin/bash
 
-SCRIPT=$(readlink -f "$0")
-# No sym
-# SCRIPT=`realpath -s $0`
-SCRIPTPATH=$(dirname $SCRIPT)
-WORKINGDIR=$(pwd)
-MYHOME="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+export YARNGLOBALDIR=${YARNGLOBALDIR:-"$(yarn global dir)"}
+globaldir=${YARNGLOBALDIR:-"$YARNGLOBALDIR"}
 
 # Optional
 shopt -s expand_aliases
-
-export YARNGLOBALDIR=${YARNGLOBALDIR:-"$(yarn global dir)"}
-globaldir=${YARNGLOBALDIR:-"$YARNGLOBALDIR"}
-if [[ -d "$globaldir/node_modules/oliver-framework" && "$DEBUG_OLIVER" == "" ]]; then
+if [[ -d "$globaldir/node_modules/oliver-framework" ]]; then
   . "$globaldir/node_modules/oliver-framework/bash/common.sh"
 else
   . $(dirname $(node -e "console.log('path: \'' + require.resolve('oliver-framework'))" | grep -F "path: '" | cut -d "'" -f 2))/bash/common.sh
 fi
+# If this is a script file
+. $OFSCRIPTPATH/includes/common.sh
+# If this is a source file
+# . $OFSOURCESCRIPTPATH/includes/common.sh
+
 loadenv
 
 vars_parse--main() {
