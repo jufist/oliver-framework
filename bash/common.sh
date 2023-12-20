@@ -980,7 +980,7 @@ loadenvf() {
 loadenv() {
   # DEBUG is a very special variable
   local olddebug
-  olddebug=${DEBUG:-"*,-*debug,-express*,-babel*,-sequelize*"}
+  olddebug=${DEBUG:-"*,-*debug,-express*,-babel*,-sequelize*,-*mysql,-*pool,-puppeteer:*"}
   [ -f ./.env.all ] && loadenvf ./.env.all
   [[ "${namespace}" == "" || ! -f ./.env.${namespace} ]] && [ -f ./.env ] && loadenvf ./.env
   [ -f ./.env.${namespace} ] && loadenvf ./.env.${namespace}
