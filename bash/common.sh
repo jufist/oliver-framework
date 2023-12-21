@@ -9,6 +9,42 @@ export OFSOURCESCRIPTPATH=$(dirname "$(realpath ${BASH_SOURCE[1]})")
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 . ${SCRIPT_DIR}/auto.sh
 OLIVER_DIR="$(dirname ${SCRIPT_DIR})"
+export YARNGLOBALDIR=${YARNGLOBALDIR:-"$(yarn global dir)"}
+
+
+function libload() {
+  ech libload:error "deprecated"
+  loadlib "$1" "$2" "$3"
+}
+
+function loadlib() {
+  local libpath="${YARNGLOBALDIR}/node_modules/$1/${2:-"includes/common.sh"}"
+  if [[ -f "$libpath" ]]; then
+    ech libload:debug "loading $1 from global"
+  else
+    libpath="$(dirname $(node -e "console.log('path: \'' + require.resolve('${1}'))" | grep -F "path: '" | cut -d "'" -f 2))/${2:-"includes/common.sh"}"
+  fi
+  . "$libpath"
+}
+
+function mynpxcmd() {
+  local prefix="npx "
+  local package="$1"
+  [[ -d ${YARNGLOBALDIR}/node_modules/$1 ]] && {
+    prefix="/usr/local/bin/"
+  }
+  shift
+  local cmd="${1:-"${package}"}"
+  shift
+  echo "${prefix}${cmd}"
+}
+
+function mynpx() {
+  local cmd="$(mynpxcmd "$1" "$2")"
+  shift
+  shift
+  ${cmd} $(addQuote "$@")
+}
 
 function escape_for_curl() {
     local input_string="$1"
@@ -602,9 +638,9 @@ verify_phone() {
 fn_exists() { test "x$(type -t $1)" = "xfunction"; }
 
 execversion() {
-  [[ -f $OFSCRIPTPATH/package.json ]] && {
-    cat $OFSCRIPTPATH/package.json | grep -F '"version"'
-  }
+  local packagepath="$OFSCRIPTPATH/package.json"
+  [[ ! -f "$OFSCRIPTPATH/package.json" ]] && [[ -f "$OFSCRIPTPATH/../package.json" ]] && packagepath="$OFSCRIPTPATH/../package.json"
+  cat $packagepath | grep -F '"version"'
 }
 
 exechelplist() {
