@@ -13,6 +13,16 @@ shift
 QUEUEFILE="$LOCKFILE.queue"
 LOCKSFILE="/dev/shm/mylocks"
 
+clean_up() {
+  # If number of lines in $LOCKSFILE is more than 200 than clear content of CLOCKSFILE
+  if [[ $(wc -l < "$LOCKSFILE") -gt 300 ]]; then
+    > "$LOCKSFILE"
+    echo "Content cleared in $LOCKSFILE">&2
+  fi
+}
+
+clean_up
+
 [[ ! -f "$LOCKFILE" ]] && {
   mkdir -p "$(dirname $LOCKFILE)"
   touch "$LOCKFILE"
@@ -78,6 +88,7 @@ queue_pos() {
 # Calculate the timeout based on the number of items in the queue
 added_to_queue=no
 # echo "XXX INSIDE queue_script checking. check=$check">&2
+[[ "${lock_fd}" == "" ]] && echo "queue flock is not available $LOCKSFILE~$LOCKFILE">&2 && exit 1
 if ! flock -n "${lock_fd}"; then
     # echo "XXX [queue_script] waiting for flock. checking not good check=$check">&2
     [[ "$check" != "" ]] && exit 1
