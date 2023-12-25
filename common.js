@@ -421,19 +421,18 @@ GM.argv = require('minimist')(process.argv.slice(2));
 GM.exportbash = function (v) {
   Object.keys(v).forEach((i) => {
     if (typeof v[i] != 'object') {
-      console.log(`${i}="${v[i]}"`);
+      console.log(`export ${i}="${v[i]}"`);
     } else {
       // Export object
-      console.log(`declare -A ${i}`);
-      console.log(`${i}=(`);
+      const items=[];
       Object.keys(v[i]).forEach((ii) => {
         if (typeof v[i][ii] != 'object') {
           // Allow \n to render normally in bash
           const s = JSON.stringify(`${v[i][ii]}`).replaceAll('\\n', '\n').replaceAll('$', '\\$');
-          console.log(`  [${ii}]=${s}`);
+          items.push(`  [${ii}]=${s}`);
         }
       });
-      console.log(`)`);
+      console.log(`export ${i}=(` + items.join(" ") + `)`);
     }
   });
 };

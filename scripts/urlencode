@@ -1,4 +1,5 @@
-:
+#!/bin/bash
+
 ##########################################################################
 # Title      :	urlencode - encode URL data
 # Author     :	Heiner Steven (heiner.steven@odn.de)
@@ -46,7 +47,7 @@
 #	urldecode
 ##########################################################################
 
-PN=`basename "$0"`			# Program name
+PN=$(basename "$0")			# Program name
 VER='1.4'
 
 : ${AWK=awk}
@@ -68,7 +69,7 @@ Msg () {
 
 Fatal () { Msg "$@"; exit 1; }
 
-set -- `getopt hl "$@" 2>/dev/null` || Usage
+set -- $(getopt hl "$@" 2>/dev/null) || Usage
 [ $# -lt 1 ] && Usage			# "getopt" detected an error
 
 EncodeEOL=no
@@ -106,7 +107,9 @@ $AWK '
 		encoded = encoded c		# safe character
 	    } else if ( c == " " ) {
 		encoded = encoded "+"	# special handling
-	    } else {
+	    } else if (c == "\n") {
+                encoded = encoded "%0A"  # encode new line as %0A
+            } else {
 		# unsafe character, encode it as a two-digit hex-number
 		lo = ord [c] % 16
 		hi = int (ord [c] / 16);
@@ -120,6 +123,6 @@ $AWK '
 	}
     }
     END {
-    	#if ( EncodeEOL ) print ""
+    	if ( EncodeEOL ) print ""
     }
 ' "$@"

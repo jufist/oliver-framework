@@ -11,6 +11,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 OLIVER_DIR="$(dirname ${SCRIPT_DIR})"
 export YARNGLOBALDIR=${YARNGLOBALDIR:-"$(yarn global dir)"}
 
+function of_version() {
+  cat "$OLIVERDIR/package.json" | grep -F "version"
+}
 
 function libload() {
   ech libload:error "deprecated"
@@ -56,7 +59,7 @@ function escape_for_curl() {
 }
 
 uri_escape() {
-  echo "$@" | ${OLIVER_DIR}/scripts/urlencode
+  echo "$@" | ${OLIVER_DIR}/scripts/urlencode -l
 }
 
 # Example
@@ -868,8 +871,11 @@ basheval() {
   local cmd1=$1
   shift
   local cmd=$(addQuote "$@")
-  ech "basheval:log" "[exec] $cmd1 $cmd"
-  ech "basheval:debug" "full" "[exec] $cmd1 $cmd"
+  if [[ "$DEBUG" == "*" ]]; then
+    echo "[exec] $cmd1 $cmd">&2
+  else
+    ech "basheval:log" "[exec] $cmd1 $cmd"
+  fi
   [[ "$dry_run" == "" ]] && {
     eval "$cmd1 $cmd"
     return $?
@@ -914,10 +920,12 @@ ech() {
 
   local out="$@"
   if [[ "$short" == "head" ]]; then
-    out=$(echo "$out" | head -c 300)"..."
+    local newout=$(echo "$out" | head -c 300)"..."
+    out="$newout"
   fi
   if [[ "$short" == "tail" ]]; then
-    out=$(echo "$out" | tail -c 300)"..."
+    local newout=$(echo "$out" | tail -c 300)"..."
+    out="$newout"
   fi
   export DEBUG="${DEBUG}"
 
@@ -1008,9 +1016,28 @@ switchenv() {
   [ -f config.${namespace}.js ] && cp config.${namespace}.js config.js
 }
 
+loadenvjsonf() {
+  local CONF
+  local curdir="$PWD"
+  local p=$(realpath "$1")
+  cd $OLIVER_DIR
+  CONF=$(node -e "require('./common.js'); 
+  const config=require('$p');
+  GM.exportbash(config);")
+  ech env:debug full "$CONF"
+  eval "$CONF"
+  cd "$curdir"
+}
+
 loadenvf() {
   . $1
   eval "$(cat $1 | grep -E '^[A-Z_][A-Z0-9_]*=' | sed 's/^/export /g')"
+}
+
+loadenvjson() {
+  [ -f ./.env.all.json ] && loadenvjsonf ./.env.all.json
+  [[ "${namespace}" == "" || ! -f ./.env.${namespace}.json ]] && [ -f ./.env.json ] && loadenvjsonf ./.env.json
+  [ -f ./.env.${namespace}.json ] && loadenvjsonf ./.env.${namespace}.json
 }
 
 loadenv() {
@@ -1020,6 +1047,7 @@ loadenv() {
   [ -f ./.env.all ] && loadenvf ./.env.all
   [[ "${namespace}" == "" || ! -f ./.env.${namespace} ]] && [ -f ./.env ] && loadenvf ./.env
   [ -f ./.env.${namespace} ] && loadenvf ./.env.${namespace}
+  loadenvjson
   export DEBUG=${DEBUG:-"${olddebug}"}
 }
 
