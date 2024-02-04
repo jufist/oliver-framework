@@ -1,7 +1,18 @@
 Metadata-Version: 2.1
-Name: oliver-framework
+Name: oliver_framework
 Version: 0.1
 Summary: Oliver Python Framework
 Home-page: https://github.com/oliverhuynh/oliver-framework
 Author: Oliver Huynh
 Author-email: oliver@jufist.com
+Requires-Dist: azure-storage-blob
+Requires-Dist: pyodbc
+Requires-Dist: python-dotenv
+Requires-Dist: schedule
+Requires-Dist: pydispatcher
+Requires-Dist: sqlalchemy
+Requires-Dist: colorlog
+Requires-Dist: pystray
+Requires-Dist: Pillow
+Requires-Dist: tk
+Requires-Dist: sqlparse
