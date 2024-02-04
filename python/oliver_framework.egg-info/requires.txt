@@ -1,0 +1,11 @@
+azure-storage-blob
+pyodbc
+python-dotenv
+schedule
+pydispatcher
+sqlalchemy
+colorlog
+pystray
+Pillow
+tk
+sqlparse

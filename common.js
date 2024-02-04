@@ -424,7 +424,7 @@ GM.exportbash = function (v) {
       console.log(`export ${i}="${v[i]}"`);
     } else {
       // Export object
-      const items=[];
+      const items = [];
       Object.keys(v[i]).forEach((ii) => {
         if (typeof v[i][ii] != 'object') {
           // Allow \n to render normally in bash
@@ -432,7 +432,7 @@ GM.exportbash = function (v) {
           items.push(`  [${ii}]=${s}`);
         }
       });
-      console.log(`export ${i}=(` + items.join(" ") + `)`);
+      console.log(`export ${i}=(` + items.join(' ') + `)`);
     }
   });
 };
