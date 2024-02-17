@@ -1,11 +1,11 @@
-Pillow
 azure-storage-blob
-colorlog
-pydispatcher
 pyodbc
-pystray
 python-dotenv
 schedule
+pydispatcher
 sqlalchemy
-sqlparse
+colorlog
+pystray
+Pillow
 tk
+sqlparse
