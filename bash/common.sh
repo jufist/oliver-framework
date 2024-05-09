@@ -939,7 +939,7 @@ ech() {
       cd ${OLIVERDIR}
       cd ../../
     }
-    echo "${withtime}$out" | node -e "let out=require('fs').readFileSync(0, 'utf-8'); var debug = require('debug')('ech:$type'); debug(out.trim());" >&2
+    echo "${withtime}$out" | DEBUG_HIDE_DATE="yes" node -e "let out=require('fs').readFileSync(0, 'utf-8'); var debug = require('debug')('ech:$type'); debug(out.trim());" >&2
   )
   return 0
 }
