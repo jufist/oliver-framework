@@ -2,8 +2,8 @@ from setuptools import setup, find_packages
 
 setup(
     name='oliver_framework',
-    version='0.1.10',
-    packages=find_packages(),
+    version='0.1.11',
+    packages=['oliver_framework.utils'],
     description='Oliver Python Framework',
     author='Oliver Huynh',
     author_email='oliver@jufist.com',
