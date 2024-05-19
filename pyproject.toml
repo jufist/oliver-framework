@@ -1,3 +1,39 @@
 [build-system]
-requires = ["setuptools>=42", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[project]
+name = "oliver_framework"
+version = "0.1.4"
+description = "Oliver Python Framework"
+authors = [
+    {name = "Oliver Huynh", email = "oliver@jufist.com"},
+]
+dependencies = [
+    "setuptools>=69.5.1",
+    "Pillow",
+    "azure-storage-blob",
+    "colorlog",
+    "pydispatcher",
+    "pyodbc",
+    "pystray",
+    "python-dotenv",
+    "schedule",
+    "sqlalchemy",
+    "sqlparse",
+    "tk",
+]
+requires-python = ">=3.8"
+readme = "README.md"
+license = {text = "MIT"}
+
+[project.urls]
+Homepage = "https://github.com/oliverhuynh/oliver-framework"
+
+[tool.pdm]
+distribution = true
+package-dir = "python"
+
+
+[tool.pdm.build]
+includes = ["utils/"]
