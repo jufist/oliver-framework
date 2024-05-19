@@ -4,7 +4,7 @@ build-backend = "pdm.backend"
 
 [project]
 name = "oliver_framework"
-version = "0.1.4"
+version = "0.1.6"
 description = "Oliver Python Framework"
 authors = [
     {name = "Oliver Huynh", email = "oliver@jufist.com"},
@@ -32,8 +32,7 @@ Homepage = "https://github.com/oliverhuynh/oliver-framework"
 
 [tool.pdm]
 distribution = true
-package-dir = "python"
 
 
 [tool.pdm.build]
-includes = ["utils/"]
+includes = ["oliver-framework/"]
