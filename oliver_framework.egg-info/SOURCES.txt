@@ -5,6 +5,7 @@ oliver_framework.egg-info/SOURCES.txt
 oliver_framework.egg-info/dependency_links.txt
 oliver_framework.egg-info/requires.txt
 oliver_framework.egg-info/top_level.txt
+python/__init__.py
 python/utils/__init__.py
 python/utils/blob.py
 python/utils/common.py
