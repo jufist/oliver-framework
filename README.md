@@ -2,18 +2,7 @@
 
 ## Setup
 
-- lib:
-  - Alpine: apk add --virtual build_deps gettext
-  - Debian: apt intall gettext
-- package.json
-
-```
-  "dependencies": {
-    "oliver-framework": "git@github.com:antbuddy-share/oliver-framework.git"
-  }
-```
-
-- `npm install`
+- `yarn add git+https://github.com/jufist/oliver-framework.git`
 
 ## Using bash structure exec
 
