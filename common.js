@@ -432,7 +432,7 @@ GM.exportbash = function (v) {
           items.push(`  [${ii}]=${s}`);
         }
       });
-      console.log(`export ${i}=(` + items.join(' ') + `)`);
+      console.log(`declare -A ${i}; export ${i}=(` + items.join(' ') + `)`);
     }
   });
 };
