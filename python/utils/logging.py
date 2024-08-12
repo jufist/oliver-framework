@@ -70,7 +70,8 @@ class Logger:
         # Try to open and write and close right away for other processes to work on this file
         try:
             with open("gui.log", "a") as file:
-                file.write(f"{msg} {args}\n")
+                current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                file.write(f"{current_time} {msg} {args}\n")
                 # os.fsync(file.fileno())  # Flush the file buffer and force it to be written to disk
         except OSError as e:
             self.warning(f"Error opening or writing to gui.log: {e}")
