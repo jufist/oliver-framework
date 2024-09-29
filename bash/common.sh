@@ -67,8 +67,9 @@ uri_escape() {
 #    [[ "$?" == "0" ]] && {
 # 
 #  IFS=$'\2' ou2=($(extract_special "$out" " RESULT=> "))
-#  out="${ou2[0]}"
-#  ret="${ou2[1]}"
+#  @TODO: My try different approach to remove line ending bug
+#  out=$(echo "${ou2[0]}" | xargs)
+#  ret=$(echo "${ou2[1]}" | xargs)
 #      ech check:log "Using cached tmp/check $out~$ret"
 #      [[ "$out" != "" ]] && echo "$out"
 #      return $ret
