@@ -2,6 +2,7 @@ import logging
 import os
 import colorlog
 import random
+import datetime
 from dotenv import load_dotenv
 
 env_path = os.getcwd() + '/.env'
@@ -84,10 +85,12 @@ class Logger:
         
     def warning(self, msg, *args):
         self.update_color()
+        self.to_log(msg, *args)
         logger.warning(f"{self.prefix}{msg}{args if len(args) else ''}", extra=self.extra)
         
     def error(self, msg, *args):
         self.update_color()
+        self.to_log(msg, *args)
         logger.error(f"{self.prefix}{msg}{args if len(args) else ''}", extra=self.extra)
 
     def critical(self, msg, *args):
