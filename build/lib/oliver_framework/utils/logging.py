@@ -22,6 +22,10 @@ logger = colorlog.getLogger()
 class Logger:
     # Store color map for departments
     department_colors = {}
+    gui_log = os.path.join("logs", "gui.log")
+
+    def set_log_file(log_file):
+       gui_log = log_file
     
     def __init__(self, department):
         self.department = department
@@ -70,7 +74,7 @@ class Logger:
     def to_log(self, msg, *args):
         # Try to open and write and close right away for other processes to work on this file
         try:
-            with open("gui.log", "a") as file:
+            with open(gui_log, "a") as file:
                 current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 file.write(f"{current_time} {msg} {args}\n")
                 # os.fsync(file.fileno())  # Flush the file buffer and force it to be written to disk
