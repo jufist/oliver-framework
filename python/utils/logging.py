@@ -18,11 +18,11 @@ logging.basicConfig(
 # Create a logger instance
 logger = colorlog.getLogger()
 # logger = logging.getLogger("logging")
+gui_log = os.path.join(os.getcwd(), "logs", "gui.log")
 
 class Logger:
     # Store color map for departments
     department_colors = {}
-    gui_log = os.path.join(os.getcwd(), "logs", "gui.log")
 
     def set_log_file(log_file):
        gui_log = log_file
@@ -103,4 +103,5 @@ class Logger:
 
 # Create other department loggers
 def getlogger(department):
+    logger.info(f"Initting log {gui_log}")
     return Logger(department)
