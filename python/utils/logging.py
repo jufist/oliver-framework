@@ -22,7 +22,7 @@ logger = colorlog.getLogger()
 class Logger:
     # Store color map for departments
     department_colors = {}
-    gui_log = os.path.join("logs", "gui.log")
+    gui_log = os.path.join(os.getcwd(), "logs", "gui.log")
 
     def set_log_file(log_file):
        gui_log = log_file
@@ -79,7 +79,7 @@ class Logger:
                 file.write(f"{current_time} {msg} {args}\n")
                 # os.fsync(file.fileno())  # Flush the file buffer and force it to be written to disk
         except OSError as e:
-            self.warning(f"Error opening or writing to gui.log: {e}")
+            self.warning(f"Error opening or writing to {gui_log}: {e}")
 
     def info(self, msg, *args):
         msg=f"{self.prefix}{msg}{args if len(args) else ''}"
