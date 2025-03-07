@@ -15,6 +15,24 @@ function of_version() {
   cat "$OLIVERDIR/package.json" | grep -F "version"
 }
 
+function json_2_env() {
+  JSON=$1
+  CONF=$(echo "$JSON" | node -e '
+    let data = "";
+    process.stdin.setEncoding("utf8");
+    process.stdin.on("data", function(chunk) {
+      data += chunk;
+    });
+    process.stdin.on("end", function() {
+      const p = "'"${OLIVER_DIR}"'/common.js";
+      require(p);
+      const jsonConfig = JSON.parse(data);
+      GM.exportbash(jsonConfig);
+    });
+  ')
+  basheval "$CONF"
+}
+
 function libload() {
   ech libload:error "deprecated"
   loadlib "$1" "$2" "$3"
@@ -885,64 +903,71 @@ basheval() {
 }
 
 ech() {
-  local data
-  [[ "$1" == "--pipe" ]] && {
+  local data returno
+  returno="yes"
+  if [[ "$1" == "--noreturn" ]]; then
+    returno=""
+    shift
+  fi
+  if [[ "$1" == "--pipe" ]]; then
     shift
     while read -r data; do
       ech $@ "$data"
     done
-    return 0
-  }
-  local type=$1
-  if [[ "$2" != "" ]]; then
-    shift
   else
-    type="debug"
-  fi
+    local type=$1
+    if [[ "$2" != "" ]]; then
+      shift
+    else
+      type="debug"
+    fi
 
-  local short=$1
-  if [[ 'head tail full' =~ "$short" ]]; then
-    shift
-  else
-    short="head"
-  fi
-  local withtime
-  withtime=""
-  [[ "$WITHTIME" != "" ]] && withtime="[$(date +%T)] "
+    local short=$1
+    if [[ 'head tail full' =~ "$short" ]]; then
+      shift
+    else
+      short="head"
+    fi
+    local withtime
+    withtime=""
+    [[ "$WITHTIME" != "" ]] && withtime="[$(date +%T)] "
 
-  #if [[ "$DEBUG" == "" && "$type" == "debug" ]]; then
-  #    return
-  # fi
+    #if [[ "$DEBUG" == "" && "$type" == "debug" ]]; then
+    #    return
+    # fi
 
-  #    if [[ "$type" == "error" ]]; then
-  #       echo "[${type}] $@" >&2
-  #      return
-  # fi
+    #    if [[ "$type" == "error" ]]; then
+    #       echo "[${type}] $@" >&2
+    #      return
+    # fi
 
-  local out="$@"
-  if [[ "$short" == "head" ]]; then
-    local newout=$(echo "$out" | head -c 300)"..."
-    out="$newout"
-  fi
-  if [[ "$short" == "tail" ]]; then
-    local newout=$(echo "$out" | tail -c 300)"..."
-    out="$newout"
-  fi
-  export DEBUG="${DEBUG}"
+    local out="$@"
+    if [[ "$short" == "head" ]]; then
+      local newout=$(echo "$out" | head -c 300)"..."
+      out="$newout"
+    fi
+    if [[ "$short" == "tail" ]]; then
+      local newout=$(echo "$out" | tail -c 300)"..."
+      out="$newout"
+    fi
+    export DEBUG="${DEBUG}"
 
-  [ "$QUIET" == "" ] && [ "$DEBUG" != "" ] && [ "$DEBUGUSEBASH" != "" ] && (
-    cd ${OLIVERDIR}
-    cd ../../
-    echo "$out" >&2
-  )
-  [ "$QUIET" == "" ] && [ "$DEBUG" != "" ] && [ "$DEBUGUSEBASH" == "" ] && (
-    [[ ! -d "node_modules/oliver-framework" ]] && {
+    [ "$QUIET" == "" ] && [ "$DEBUG" != "" ] && [ "$DEBUGUSEBASH" != "" ] && (
       cd ${OLIVERDIR}
       cd ../../
-    }
-    echo "${withtime}$out" | DEBUG_HIDE_DATE="yes" node -e "let out=require('fs').readFileSync(0, 'utf-8'); var debug = require('debug')('ech:$type'); debug(out.trim());" >&2
-  )
-  return 0
+      echo "$out" >&2
+    )
+    [ "$QUIET" == "" ] && [ "$DEBUG" != "" ] && [ "$DEBUGUSEBASH" == "" ] && (
+      [[ ! -d "node_modules/oliver-framework" ]] && {
+        cd ${OLIVERDIR}
+        cd ../../
+      }
+      echo "${withtime}$out" | DEBUG_HIDE_DATE="yes" node -e "let out=require('fs').readFileSync(0, 'utf-8'); var debug = require('debug')('ech:$type'); debug(out.trim());" >&2
+    )
+  fi
+  if [[ "$returno" != "" ]]; then
+    return 0
+  fi
 }
 
 # insert_after_token "content" "token" "piecetoadd"
