@@ -12,9 +12,10 @@ new release.
 ### Create a source and wheel distribution
 
 ```bash
-rm -rf dist/
-rm -rf build/
+rm -rf dist/ build/
 python -m build
+rm -rf build/lib/oliver_framework/*;
+cp -rf python/* build/lib/oliver_framework/
 ```
 
 The `python/` directory is declared as the package source in `setup.py`, so no additional file copies are required.
