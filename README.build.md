@@ -6,8 +6,8 @@
 python -m pip install --upgrade build
 ```
 
-Increase the version number in `setup.py` before building so that package
-indexes and dependency managers can detect the new release.
+Increase the version number in `setup.py` before building so that package indexes and dependency managers can detect the
+new release.
 
 ### Create a source and wheel distribution
 
@@ -16,8 +16,7 @@ rm -rf dist/
 python -m build
 ```
 
-The `python/` directory is declared as the package source in `setup.py`, so no
-additional file copies are required.
+The `python/` directory is declared as the package source in `setup.py`, so no additional file copies are required.
 
 ### Publish the build
 
@@ -27,8 +26,7 @@ git commit -m "Build release"
 git push
 ```
 
-To test the package locally before publishing, install it in a virtual
-environment:
+To test the package locally before publishing, install it in a virtual environment:
 
 ```bash
 python -m venv .venv
@@ -43,8 +41,7 @@ python -m pip install --upgrade pip
 python -m pip install --upgrade -e .
 ```
 
-Reinstall the package in downstream projects by activating the appropriate
-environment and running:
+Reinstall the package in downstream projects by activating the appropriate environment and running:
 
 ```bash
 python -m pip install --upgrade git+https://github.com/jufist/oliver-framework.git
