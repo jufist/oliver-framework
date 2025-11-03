@@ -1,23 +1,51 @@
+## Python package build notes
+
+### Prerequisites
+
+```bash
 python -m pip install --upgrade build
-
-- Increase version at setup.py as package.json
-
 ```
-rm -rf dist/*
-rm -rf build/lib/oliver_framework/*;
-cp -rf python/* build/lib/oliver_framework/
+
+Increase the version number in `setup.py` before building so that package
+indexes and dependency managers can detect the new release.
+
+### Create a source and wheel distribution
+
+```bash
+rm -rf dist/
 python -m build
-git add *
-git commit -m LatestBuild#
-git push
-rm -rf sass/lib/python3.8/site-packages/oliver_framework*
-. sass/bin/activate
-pip install --upgrade git+https://github.com/jufist/oliver-framework.git
 ```
 
-# Link and quick dev
+The `python/` directory is declared as the package source in `setup.py`, so no
+additional file copies are required.
 
-In oliver-framework pip install -e . python -m build
+### Publish the build
 
-Go to target rm -rf sass/lib/python3.8/site-packages/oliver_framework\* . sass/bin/activate pip install --upgrade
-~/projects/oliver-framework/
+```bash
+git add .
+git commit -m "Build release"
+git push
+```
+
+To test the package locally before publishing, install it in a virtual
+environment:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade dist/*.whl
+```
+
+### Editable installs for development
+
+```bash
+python -m pip install --upgrade pip
+python -m pip install --upgrade -e .
+```
+
+Reinstall the package in downstream projects by activating the appropriate
+environment and running:
+
+```bash
+python -m pip install --upgrade git+https://github.com/jufist/oliver-framework.git
+```
