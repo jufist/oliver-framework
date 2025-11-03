@@ -4,6 +4,36 @@
 
 - `yarn add git+https://github.com/jufist/oliver-framework.git`
 
+### Python package
+
+The repository also distributes a Python helper package that mirrors the
+JavaScript tooling. Install the package directly from the repository:
+
+```bash
+python -m pip install --upgrade git+https://github.com/jufist/oliver-framework.git
+```
+
+The module exposes a colour-aware logger:
+
+```python
+from oliver_framework import getlogger
+
+logger = getlogger("workers")
+logger.info("Dispatcher started")
+```
+
+The logger reads optional environment variables that can be configured in an
+`.env` file at the repository root:
+
+| Variable       | Description                                                                |
+| -------------- | -------------------------------------------------------------------------- |
+| `LOGGINGLEVEL` | Logging verbosity, e.g. `INFO`, `DEBUG`, `WARNING`.                         |
+| `NAMESPACE`    | Text prepended to the department name in every log entry.                   |
+| `GUI_LOG_PATH` | Override the log forwarding file (defaults to `<repo>/logs/gui.log`).       |
+
+All log messages are written to the console with colour formatting and mirrored to
+`GUI_LOG_PATH` when provided.
+
 ## Using bash structure exec
 
 ```bash
