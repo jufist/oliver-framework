@@ -130,12 +130,25 @@ class Logger:
             reset=True,
             style="%",
         )
-        handler = logging.StreamHandler()
-        handler.setFormatter(formatter)
 
-        if self._logger.handlers:
-            self._logger.handlers.clear()
-        self._logger.addHandler(handler)
+        default_handler = None
+        handlers_to_remove = []
+        for handler in self._logger.handlers:
+            if getattr(handler, "_oliver_default", False):
+                if default_handler is None:
+                    default_handler = handler
+                else:
+                    handlers_to_remove.append(handler)
+
+        for handler in handlers_to_remove:
+            self._logger.removeHandler(handler)
+
+        if default_handler is None:
+            default_handler = logging.StreamHandler()
+            setattr(default_handler, "_oliver_default", True)
+            self._logger.addHandler(default_handler)
+
+        default_handler.setFormatter(formatter)
 
     def _write_gui_log(self, msg: str) -> None:
         _ensure_parent(GUI_LOG_PATH)
