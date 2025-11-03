@@ -13,6 +13,7 @@ new release.
 
 ```bash
 rm -rf dist/
+rm -rf build/
 python -m build
 ```
 
