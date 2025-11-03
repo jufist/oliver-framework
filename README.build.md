@@ -12,10 +12,15 @@ new release.
 ### Create a source and wheel distribution
 
 ```bash
-rm -rf dist/ build/
-python -m build
-rm -rf build/lib/oliver_framework/*;
+rm -rf dist/*
+rm -rf build/lib/oliver_framework/*
 cp -rf python/* build/lib/oliver_framework/
+python -m build
+git add *
+git commit -m LatestBuild#
+git push
+# Upgrade in target
+pip install --upgrade --force-reinstall git+https://github.com/jufist/oliver-framework.git
 ```
 
 The `python/` directory is declared as the package source in `setup.py`, so no additional file copies are required.
