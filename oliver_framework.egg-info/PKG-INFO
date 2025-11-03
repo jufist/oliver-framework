@@ -1,6 +1,6 @@
-Metadata-Version: 2.1
+Metadata-Version: 2.4
 Name: oliver_framework
-Version: 1.0.123
+Version: 1.1.0
 Summary: Oliver Python Framework
 Home-page: https://github.com/oliverhuynh/oliver-framework
 Author: Oliver Huynh
@@ -16,3 +16,8 @@ Requires-Dist: pystray
 Requires-Dist: Pillow
 Requires-Dist: tk
 Requires-Dist: sqlparse
+Dynamic: author
+Dynamic: author-email
+Dynamic: home-page
+Dynamic: requires-dist
+Dynamic: summary
