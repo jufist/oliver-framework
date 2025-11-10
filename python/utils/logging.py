@@ -117,6 +117,12 @@ class Logger:
         message = self._compose_message(msg, args)
         self._logger.critical(message, extra=self.extra)
 
+    def exception(self, msg: str, *args: object) -> None:
+        ret = self.critical(msg, *args)
+        raise
+        return ret
+
+
     # Internal helpers ---------------------------------------------------
     def _compose_message(self, msg: str, args: Iterable[object]) -> str:
         self._configure_handler()

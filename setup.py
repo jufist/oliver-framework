@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='oliver_framework',
-    version='1.1.3',
+    version='1.1.4',
     packages=find_packages(),# ['oliver_framework.utils'],
     description='Oliver Python Framework',
     author='Oliver Huynh',
