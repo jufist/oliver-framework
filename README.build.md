@@ -15,6 +15,7 @@ new release.
 rm -rf dist/*
 rm -rf build/lib/oliver_framework/*
 cp -rf python/* build/lib/oliver_framework/
+. .venv/bin/activate
 python -m build
 git add *
 git commit -m LatestBuild#
