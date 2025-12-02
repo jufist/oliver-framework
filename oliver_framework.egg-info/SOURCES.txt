@@ -13,3 +13,4 @@ python/utils/database.py
 python/utils/files.py
 python/utils/finetuner.py
 python/utils/logging.py
+tests/test_logging.py

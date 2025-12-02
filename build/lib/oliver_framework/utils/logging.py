@@ -60,10 +60,6 @@ def _ensure_parent(path: Path) -> None:
         pass
 
 
-def _format_args(args: Iterable[object]) -> str:
-    return "" if not args else " " + " ".join(str(arg) for arg in args)
-
-
 @dataclass
 class Logger:
     """Small adapter around :mod:`logging` that adds colour and prefixes."""
@@ -95,27 +91,30 @@ class Logger:
         self._logger.addHandler(handler)
 
     def debug(self, msg: str, *args: object) -> None:
-        message = self._compose_message(msg, args)
-        self._logger.debug(message, extra=self.extra)
+        message = self._compose_message(msg)
+        self._logger.debug(message, *args, extra=self.extra)
 
     def info(self, msg: str, *args: object) -> None:
-        message = self._compose_message(msg, args)
-        self._write_gui_log(message)
-        self._logger.info(message, extra=self.extra)
+        message = self._compose_message(msg)
+        formatted = self._format_for_file(message, args)
+        self._write_gui_log(formatted)
+        self._logger.info(message, *args, extra=self.extra)
 
     def warning(self, msg: str, *args: object) -> None:
-        message = self._compose_message(msg, args)
-        self._write_gui_log(message)
-        self._logger.warning(message, extra=self.extra)
+        message = self._compose_message(msg)
+        formatted = self._format_for_file(message, args)
+        self._write_gui_log(formatted)
+        self._logger.warning(message, *args, extra=self.extra)
 
     def error(self, msg: str, *args: object) -> None:
-        message = self._compose_message(msg, args)
-        self._write_gui_log(message)
-        self._logger.error(message, extra=self.extra)
+        message = self._compose_message(msg)
+        formatted = self._format_for_file(message, args)
+        self._write_gui_log(formatted)
+        self._logger.error(message, *args, extra=self.extra)
 
     def critical(self, msg: str, *args: object) -> None:
-        message = self._compose_message(msg, args)
-        self._logger.critical(message, extra=self.extra)
+        message = self._compose_message(msg)
+        self._logger.critical(message, *args, extra=self.extra)
 
     def exception(self, msg: str, *args: object) -> None:
         ret = self.critical(msg, *args)
@@ -124,9 +123,19 @@ class Logger:
 
 
     # Internal helpers ---------------------------------------------------
-    def _compose_message(self, msg: str, args: Iterable[object]) -> str:
+    def _compose_message(self, msg: str) -> str:
         self._configure_handler()
-        return f"{self.prefix}{msg}{_format_args(args)}"
+        return f"{self.prefix}{msg}"
+
+    @staticmethod
+    def _format_for_file(message: str, args: Iterable[object]) -> str:
+        """Apply %-style formatting for GUI log output."""
+        if not args:
+            return message
+        try:
+            return message % args
+        except TypeError:
+            return " ".join([message, *(str(arg) for arg in args)])
 
     def _configure_handler(self) -> None:
         formatter = colorlog.ColoredFormatter(
