@@ -13,8 +13,6 @@ new release.
 
 ```bash
 rm -rf dist/*
-rm -rf build/lib/oliver_framework/*
-cp -rf python/* build/lib/oliver_framework/
 . .venv/bin/activate
 python -m build
 git add *
@@ -24,7 +22,7 @@ git push
 pip install --upgrade --force-reinstall git+https://github.com/jufist/oliver-framework.git
 ```
 
-The `python/` directory is declared as the package source in `setup.py`, so no additional file copies are required.
+The package metadata now lives in `pyproject.toml`, and PEP 517 builds create wheels by default—no manual copies needed.
 
 ### Publish the build
 
