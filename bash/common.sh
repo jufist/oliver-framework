@@ -509,7 +509,10 @@ myconfirm() {
 # set -- "${newargs[@]}"
 myargs() {
   local isV4
-  isV4="$(bash --version | grep version | grep -F "4." | grep -vF "4.4" | wc -l)"
+  isV4="0"
+  if bash --version 2>/dev/null | grep -q "version 4\\." && ! bash --version 2>/dev/null | grep -q "version 4\\.4"; then
+    isV4="1"
+  fi
   [ "$isV4" == "1" ] && {
     echo "Please upgrade bash to 5" >&2
     local arr
@@ -691,6 +694,8 @@ base64fix() {
   if [[ "$1" == "--base64" ]]; then
     local s
     s=$(echo $2 | base64 -d | jq -r '.[] | "echo -e \"$(urldecode \"\(.)\")\" ; echo -n \" \" "')
+    [[ "$?" != "0" ]] && return 2
+    [[ "$s" == "" ]] && return 3
     s="${s//\!/\\\!}"
 
     # Debug
@@ -727,7 +732,7 @@ oliver-common-exec() {
   local sr
   s=$(base64fix "$@")
   sr=$?
-  eval "x=( $(evalable "$s" | sed 's/\\\!/\!/g') )"
+  [[ "$sr" == "0" ]] && eval "x=( $(evalable "$s" | sed 's/\\\!/\!/g') )"
 
   # Debug
   # echo "$s">&2
@@ -740,6 +745,9 @@ oliver-common-exec() {
   # exit 1
   if [[ "${sr}" == "0" ]]; then
     set -- "${x[@]}"
+  elif [[ "${sr}" != "1" ]]; then
+    ech "error" "base64fix failed (code ${sr})"
+    return $sr
   fi
 
   action="$1"
@@ -905,18 +913,18 @@ basheval() {
 ech() {
   local data returno
   returno="yes"
-  if [[ "$1" == "--noreturn" ]]; then
+  if [[ "${1:-}" == "--noreturn" ]]; then
     returno=""
     shift
   fi
-  if [[ "$1" == "--pipe" ]]; then
+  if [[ "${1:-}" == "--pipe" ]]; then
     shift
     while read -r data; do
       ech $@ "$data"
     done
   else
     local type=$1
-    if [[ "$2" != "" ]]; then
+    if [[ "${2:-}" != "" ]]; then
       shift
     else
       type="debug"
@@ -930,7 +938,7 @@ ech() {
     fi
     local withtime
     withtime=""
-    [[ "$WITHTIME" != "" ]] && withtime="[$(date +%T)] "
+    [[ "${WITHTIME:-}" != "" ]] && withtime="[$(date +%T)] "
 
     #if [[ "$DEBUG" == "" && "$type" == "debug" ]]; then
     #    return
@@ -952,7 +960,7 @@ ech() {
     fi
     export DEBUG="${DEBUG}"
 
-    [ "$QUIET" == "" ] && [ "$DEBUG" != "" ] && [ "$DEBUGUSEBASH" != "" ] && (
+    [ "${QUIET:-}" == "" ] && [ "${DEBUG:-}" != "" ] && [ "${DEBUGUSEBASH:-}" != "" ] && (
       cd ${OLIVERDIR}
       cd ../../
       echo "$out" >&2
