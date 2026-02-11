@@ -587,7 +587,7 @@ myargs() {
       j=${j::-1}
     }
 
-    export "MP_$j=${newargs[$i]}"
+    export "MP_$j=${newargs[$i]:-}"
     i=$((i+1))
   done
 
@@ -730,8 +730,12 @@ oliver-common-exec() {
   local x
   local s
   local sr
+  local _had_errexit=""
+  [[ "$-" == *e* ]] && _had_errexit="yes"
+  [[ -n "${_had_errexit}" ]] && set +e
   s=$(base64fix "$@")
   sr=$?
+  [[ -n "${_had_errexit}" ]] && set -e
   [[ "$sr" == "0" ]] && eval "x=( $(evalable "$s" | sed 's/\\\!/\!/g') )"
 
   # Debug
@@ -750,7 +754,7 @@ oliver-common-exec() {
     return $sr
   fi
 
-  action="$1"
+  action="${1:-}"
   local fullaction="exec$action"
   if [[ $action =~ "--" ]] && fn_exists "exec$action"; then
     shift
