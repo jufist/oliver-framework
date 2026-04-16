@@ -9,13 +9,19 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import ClassVar, Dict, Iterable, Union
 
-import colorlog
-from dotenv import load_dotenv
+try:
+    import colorlog
+except Exception:  # pragma: no cover - optional dependency
+    colorlog = None
+try:
+    from dotenv import load_dotenv
+except Exception:  # pragma: no cover - optional dependency
+    load_dotenv = None
 
 
 BASE_DIR = Path.cwd()
 ENV_PATH = BASE_DIR / ".env"
-if ENV_PATH.exists():
+if ENV_PATH.exists() and load_dotenv:
     load_dotenv(ENV_PATH)
 
 LOG_LEVEL = os.getenv("LOGGINGLEVEL", "INFO").upper()
@@ -27,7 +33,7 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 
-LOGGER = colorlog.getLogger("oliver")
+LOGGER = (colorlog.getLogger("oliver") if colorlog else logging.getLogger("oliver"))
 LOGGER.setLevel(LOG_LEVEL)
 LOGGER.propagate = False
 
@@ -43,6 +49,12 @@ GUI_LOG_PATH: Path = (
     if (env_path := os.getenv("GUI_LOG_PATH"))
     else _default_log_path()
 )
+GUI_LOG_DISABLED: bool = os.getenv("GUI_LOG_DISABLED", "").strip().lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
+}
 
 
 def set_log_file(log_file: Union[os.PathLike[str], str]) -> None:
@@ -50,6 +62,13 @@ def set_log_file(log_file: Union[os.PathLike[str], str]) -> None:
 
     global GUI_LOG_PATH
     GUI_LOG_PATH = Path(log_file)
+
+
+def set_gui_log_disabled(disabled: bool = True) -> None:
+    """Enable or disable GUI log forwarding at runtime."""
+
+    global GUI_LOG_DISABLED
+    GUI_LOG_DISABLED = disabled
 
 
 def _ensure_parent(path: Path) -> None:
@@ -138,13 +157,19 @@ class Logger:
             return " ".join([message, *(str(arg) for arg in args)])
 
     def _configure_handler(self) -> None:
-        formatter = colorlog.ColoredFormatter(
-            "%(log_color)s%(asctime)s - [%(levelname)s] - %(message)s%(reset)s",
-            datefmt="%Y-%m-%d %H:%M:%S",
-            log_colors=self.department_colors[self.department],
-            reset=True,
-            style="%",
-        )
+        if colorlog:
+            formatter = colorlog.ColoredFormatter(
+                "%(log_color)s%(asctime)s - [%(levelname)s] - %(message)s%(reset)s",
+                datefmt="%Y-%m-%d %H:%M:%S",
+                log_colors=self.department_colors[self.department],
+                reset=True,
+                style="%",
+            )
+        else:
+            formatter = logging.Formatter(
+                "%(asctime)s - [%(levelname)s] - %(message)s",
+                datefmt="%Y-%m-%d %H:%M:%S",
+            )
 
         default_handler = None
         handlers_to_remove = []
@@ -166,15 +191,19 @@ class Logger:
         default_handler.setFormatter(formatter)
 
     def _write_gui_log(self, msg: str) -> None:
+        global GUI_LOG_DISABLED
+        if GUI_LOG_DISABLED:
+            return
         _ensure_parent(GUI_LOG_PATH)
         try:
             with GUI_LOG_PATH.open("a", encoding="utf-8") as file:
                 current_time = _dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 file.write(f"{current_time} {msg}\n")
         except OSError as error:
+            GUI_LOG_DISABLED = True
             # Avoid infinite recursion by calling the module level logger directly.
             self._logger.warning(
-                "[%s] Error writing to %s: %s",
+                "[%s] Error writing to %s: %s (disabling GUI log forwarding)",
                 self.department,
                 GUI_LOG_PATH,
                 error,
@@ -188,4 +217,4 @@ def getlogger(department: str) -> Logger:
     return Logger(department)
 
 
-__all__ = ["Logger", "getlogger", "set_log_file"]
+__all__ = ["Logger", "getlogger", "set_log_file", "set_gui_log_disabled"]

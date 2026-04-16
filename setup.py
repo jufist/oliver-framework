@@ -11,7 +11,7 @@ packages = [
 
 setup(
     name="oliver_framework",
-    version="1.1.6",
+    version="1.1.7",
     description="Oliver Python Framework",
     author="Oliver Huynh",
     author_email="oliver@jufist.com",

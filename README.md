@@ -29,8 +29,9 @@ The logger reads optional environment variables that can be configured in an `.e
 | `LOGGINGLEVEL` | Logging verbosity, e.g. `INFO`, `DEBUG`, `WARNING`.                   |
 | `NAMESPACE`    | Text prepended to the department name in every log entry.             |
 | `GUI_LOG_PATH` | Override the log forwarding file (defaults to `<repo>/logs/gui.log`). |
+| `GUI_LOG_DISABLED` | Disable GUI log file forwarding (`1`, `true`, `yes`, `on`).       |
 
-All log messages are written to the console with colour formatting and mirrored to `GUI_LOG_PATH` when provided.
+All log messages are written to the console with colour formatting and mirrored to `GUI_LOG_PATH` unless `GUI_LOG_DISABLED` is enabled.
 
 ## Using bash structure exec
 

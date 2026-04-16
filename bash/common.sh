@@ -601,7 +601,8 @@ myargs() {
     short="$(echo $j | cut -d'|' -f1)"
     long="$(echo $j | cut -d'|' -f2)"
     varname="MA_$long"
-    eval "i=\$$varname"
+    varname=$(echo "$varname" | sed 's/[-]/_/g' | sed 's/[^0-9a-zA-Z_]//g')
+    i="${!varname:-}"
     [[ "$more" == "required" ]] && {
       [[ "$i" == "" ]] && echo "Please fill --$long=..." && return 1
     }
@@ -969,7 +970,7 @@ ech() {
       cd ../../
       echo "$out" >&2
     )
-    [ "$QUIET" == "" ] && [ "$DEBUG" != "" ] && [ "$DEBUGUSEBASH" == "" ] && (
+    [ "${QUIET:-}" == "" ] && [ "${DEBUG:-}" != "" ] && [ "${DEBUGUSEBASH:-}" == "" ] && (
       [[ ! -d "node_modules/oliver-framework" ]] && {
         cd ${OLIVERDIR}
         cd ../../
