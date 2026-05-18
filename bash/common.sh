@@ -826,8 +826,15 @@ execIET() {
   }
 
   ech "log" "[Exec] $usesshpass~$command"
-  [[ "$dry_run" == "" ]] && eval $command
-  [[ "$dry_run" != "" ]] && ech log $command
+  local ret=0
+  if [[ "$dry_run" == "" ]]; then
+    eval $command
+    ret=$?
+  else
+    ech log $command
+    ret=0
+  fi
+  return $ret
 }
 
 execIETdocker() {

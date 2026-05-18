@@ -136,9 +136,10 @@ class Logger:
         self._logger.critical(message, *args, extra=self.extra)
 
     def exception(self, msg: str, *args: object) -> None:
-        ret = self.critical(msg, *args)
-        raise
-        return ret
+        message = self._compose_message(msg)
+        formatted = self._format_for_file(message, args)
+        self._write_gui_log(formatted)
+        self._logger.exception(message, *args, extra=self.extra)
 
 
     # Internal helpers ---------------------------------------------------
