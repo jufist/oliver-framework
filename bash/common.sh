@@ -276,10 +276,10 @@ addQuote() {
     escaped=${i//\\/\\\\}
     escaped=${escaped//\"/\\\"}
 
-    if [[ "$i" == *[' "']* ]]; then
-      out+=("\"$escaped\"")
-    else
+    if [[ $i && "$i" != *[' "']* ]]; then
       out+=("$escaped")
+    else
+      out+=("\"$escaped\"")
     fi
   done
 
