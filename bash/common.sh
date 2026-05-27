@@ -273,7 +273,12 @@ function addQuote() {
   local i
   for i in "$@"; do
     i="${i//\\/\\\\}"
-    C="$C \"${i//\"/\\\"}\""
+    # If ${i} doesn't have quote, just use normal
+    if [[ "$i" != *'"'* ]]; then
+      C="$C ${i//\"/\\\"}"
+    else
+      C="$C \"${i//\"/\\\"}\""
+    fi
   done
   echo "$C"
 }
