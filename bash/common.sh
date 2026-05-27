@@ -274,7 +274,7 @@ function addQuote() {
   for i in "$@"; do
     i="${i//\\/\\\\}"
     # If ${i} doesn't have quote, just use normal
-    if [[ "$i" != *'"'* ]]; then
+    if [[ "$i" != "" && "$i" != *'"'* ]]; then
       C="$C ${i//\"/\\\"}"
     else
       C="$C \"${i//\"/\\\"}\""
