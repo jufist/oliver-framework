@@ -268,19 +268,22 @@ function textBetweenTag() {
   echo "$1" | sedd -n "/<$tag/,/\/$tag>/p"
 }
 
-function addQuote() {
-  local C=''
-  local i
+addQuote() {
+  local out=()
+  local i escaped
+
   for i in "$@"; do
-    i="${i//\\/\\\\}"
-    # If ${i} doesn't have quote, just use normal
-    if [[ "$i" != "" && "$i" != *'"'* ]]; then
-      C="$C ${i//\"/\\\"}"
+    escaped=${i//\\/\\\\}
+    escaped=${escaped//\"/\\\"}
+
+    if [[ "$i" == *[' "']* ]]; then
+      out+=("\"$escaped\"")
     else
-      C="$C \"${i//\"/\\\"}\""
+      out+=("$escaped")
     fi
   done
-  echo "$C"
+
+  IFS=' ' printf '%s' "${out[*]}"
 }
 
 seddable() {
