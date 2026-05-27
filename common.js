@@ -3,7 +3,23 @@ GM = global.GM || {};
 var fs = require('fs');
 var path = require('path');
 var util = require('util');
-var appRoot = require('path').dirname(require('path').dirname(__dirname));
+var defaultAppRoot = require('path').dirname(require('path').dirname(__dirname));
+
+// Support symlinked/yarn-linked package installs by resolving root from caller.
+var resolveAppRoot = function () {
+  if (process.env.CONTROLDIR && fs.existsSync(process.env.CONTROLDIR)) {
+    return process.env.CONTROLDIR;
+  }
+  if (global.APP_ROOT && fs.existsSync(global.APP_ROOT)) {
+    return global.APP_ROOT;
+  }
+  if (require.main && require.main.filename) {
+    return path.dirname(require.main.filename);
+  }
+  return defaultAppRoot;
+};
+
+var appRoot = resolveAppRoot();
 var config;
 let LOCALDIR = global.LOCALDIR || '';
 let NAMESPACE = global.NAMESPACE || '';
