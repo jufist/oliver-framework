@@ -125,6 +125,39 @@ exec--main() {
 oliver-common-exec "$@"
 ```
 
+
+## Help system
+
+The framework auto-generates help output from `vars_parse--<func>` definitions. When `<script> --help` is called, each section prints its argument definitions.
+
+### Custom help with `help--<func>`
+
+Define a `help--<func>` function to override the fallback for any section:
+
+```bash
+exec--deploy() {
+  echo "Deploying..."
+}
+
+help--deploy() {
+  echo "  Deploy the application to a target environment."
+  echo "  Usage: $0 --deploy --env <staging|production>"
+  echo "  Options:"
+  echo "    --env   Target environment (required)"
+}
+```
+
+When `--help` is called, sections with `help--<func>` get the custom text; others show the auto-generated fallback.
+
+### Section-specific help
+
+View help for a single section:
+
+```bash
+<script> --help deploy
+<script> --help --deploy     # also works with --
+```
+
 # Using Docker Oliver Stack
 
 `. node_modules/oliver-framework/bash/oliverstack.sh` `oliver-stack --help`

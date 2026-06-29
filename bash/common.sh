@@ -679,18 +679,26 @@ execversion() {
 
 exechelplist() {
   local cmd=$(basename $0)
+  local section=""
+  [[ "$1" == "--help" && -n "$2" ]] && section="$2"
+  [[ "$section" != "" && "$section" != --* ]] && section="--$section"
   local funcs=($(declare -F | grep exec-- | sed 's/declare -f exec//'))
   local i
   for i in "${funcs[@]}"; do
+    [[ -n "$section" && "$i" != "$section" ]] && continue
     local cmd2="$cmd $i"
     echo "------------"
     echo "$cmd2"
-    i="vars_parse$i"
-    ! fn_exists $i && continue
-    local def=$(type $i)
-    echo ""
-    echo "$def" | grep 'defined'
-    echo "$def" | grep -F "\$" | grep -v -F "\$@"
+    if fn_exists "help$i"; then
+      help$i
+    else
+      local j="vars_parse$i"
+      ! fn_exists $j && continue
+      local def=$(type $j)
+      echo ""
+      echo "$def" | grep 'defined'
+      echo "$def" | grep -F "\$" | grep -v -F "\$@"
+    fi
   done
 }
 
@@ -797,7 +805,7 @@ oliver-common-exec() {
   local ret
   fn_exists $fullaction && $fullaction "$@"
   ret=$?
-  fn_exists $fullaction || exechelplist
+  fn_exists $fullaction || exechelplist "$@"
   return $ret
 }
 
