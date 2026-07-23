@@ -4,7 +4,8 @@ OFSCRIPT=$(readlink -f "$0")
 # No sym
 # SCRIPT=`realpath -s $0`
 export OFSCRIPTPATH=$(dirname $OFSCRIPT)
-export OFSOURCESCRIPTPATH=$(dirname "$(realpath ${BASH_SOURCE[1]})")
+local_source="${BASH_SOURCE[1]:-$0}"
+export OFSOURCESCRIPTPATH=$(dirname "$(realpath "${local_source}")")
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 . ${SCRIPT_DIR}/auto.sh
@@ -690,7 +691,7 @@ exechelplist() {
     echo "------------"
     echo "$cmd2"
     if fn_exists "help$i"; then
-      help$i
+      help$i "$@"
     else
       local j="vars_parse$i"
       ! fn_exists $j && continue
